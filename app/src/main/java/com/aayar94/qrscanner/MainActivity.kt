@@ -28,7 +28,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.aayar94.qrscanner.core.navigation.AppNavigation
 import com.aayar94.qrscanner.presentation.QrScannerView
 import com.aayar94.qrscanner.core.theme.theme.QRScannerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +39,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             QRScannerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                   /*RequestCameraPermission({
+                    /*RequestCameraPermission({
 
-                    })
-*/
+                     })
+ */
                     AppNavigation()
 
                 }
