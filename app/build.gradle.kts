@@ -2,18 +2,21 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.google.dagger.hilt)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
     namespace = "com.aayar94.qrscanner"
-    compileSdk = 36
+    compileSdk = libs.versions.projectCompileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.aayar94.qrscanner"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.projectMinSdk.get().toInt()
+        targetSdk = libs.versions.projectTargetSdk.get().toInt()
+        versionCode = libs.versions.projectversionCode.get().toInt()
+        versionName = libs.versions.projectversionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,7 +67,25 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.extensions)
 
+    implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    /*      ROOM        */
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
 
     implementation(libs.androidx.core.splashscreen)
 }
