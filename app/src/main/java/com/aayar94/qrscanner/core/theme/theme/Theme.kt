@@ -1,6 +1,5 @@
-package com.aayar94.qrscanner.ui.theme
+package com.aayar94.qrscanner.core.theme.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -1,4 +1,4 @@
-package com.aayar94.qrscanner.ui.theme
+package com.aayar94.qrscanner.core.theme.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -63,4 +63,8 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.extensions)
+
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.androidx.core.splashscreen)
 }
