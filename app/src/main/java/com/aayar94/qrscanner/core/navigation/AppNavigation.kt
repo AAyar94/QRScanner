@@ -50,8 +50,8 @@ fun AppNavigation(onFinishApp: () -> Unit) {
         ) {
             composable(HOME) {
                 HomeScreenContainer(
-                    onNavigateToQRDetail = {},
-                    onNavigateToGenerate = {},
+                    onNavigateToQRDetail = {navController.navigate(QR_DETAIL)},
+                    onNavigateToGenerate = {navController.navigate(GENERATE_By_CATEGORY)},
                     onNavigateToQRHistory = { navController.navigate(HISTORY) }
                 )
             }
