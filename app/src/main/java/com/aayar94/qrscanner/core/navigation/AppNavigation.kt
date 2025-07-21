@@ -18,12 +18,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_By_CATEGORY
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HISTORY
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HOME
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.ONBOARDING
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SCAN
+import com.aayar94.qrscanner.presentation.generate.GenerateScreenContainer
+import com.aayar94.qrscanner.presentation.history.HistoryScreenContainer
 import com.aayar94.qrscanner.presentation.home.HomeScreenContainer
 import com.aayar94.qrscanner.presentation.home.QrScannerScreen
 import com.aayar94.qrscanner.presentation.onboarding.OnboardingScreenContainer
+import com.aayar94.qrscanner.presentation.qr_detail.QRDetailScreenContainer
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,7 +52,7 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                 HomeScreenContainer(
                     onNavigateToQRDetail = {},
                     onNavigateToGenerate = {},
-                    onNavigateToQRHistory = {}
+                    onNavigateToQRHistory = { navController.navigate(HISTORY) }
                 )
             }
             composable(SCAN) { QrScannerScreen(result = {}) }
@@ -80,6 +86,15 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                         }
                     }
                 })
+            }
+            composable(HISTORY) {
+                HistoryScreenContainer()
+            }
+            composable(GENERATE_By_CATEGORY) {
+                GenerateScreenContainer()
+            }
+            composable(QR_DETAIL) {
+                QRDetailScreenContainer()
             }
         }
 

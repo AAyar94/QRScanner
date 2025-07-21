@@ -6,7 +6,7 @@ object NavigationRoutes {
     const val HOME = "home"
     const val SCAN = "scan"
     const val HISTORY = "history"
-    const val GENERATE_FROM_CATEGORY = "generate_from_category"
+    const val GENERATE_By_CATEGORY = "generate_from_category"
     const val GENERATE = "generate"
     const val QR_DETAIL = "qr_detail"
     const val SETTINGS = "settings"
