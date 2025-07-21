@@ -35,6 +35,18 @@ class HomeViewModel @Inject constructor() :
             HomeScreenContract.UiAction.Retry -> {
                 onRetry()
             }
+
+            HomeScreenContract.UiAction.NavigateToGenerate -> {
+                viewModelScope.launch {
+                    _uiEffect.send(HomeScreenContract.UiEffect.NavigateToGenerate())
+                }
+            }
+
+            HomeScreenContract.UiAction.NavigateToQRHistory -> {
+                viewModelScope.launch {
+                    _uiEffect.send(HomeScreenContract.UiEffect.NavigateToQRHistory())
+                }
+            }
         }
     }
 

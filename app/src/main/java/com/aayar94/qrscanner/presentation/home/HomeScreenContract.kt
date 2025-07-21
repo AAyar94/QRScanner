@@ -13,11 +13,15 @@ object HomeScreenContract {
         data class OnQRCodeScanned(val qrProxy: String) : UiAction()
         data object Retry : UiAction()
         data object DismissError : UiAction()
+        data object NavigateToQRHistory : UiAction()
+        data object NavigateToGenerate : UiAction()
     }
 
     sealed class UiEffect {
 
         data class ShowError(@StringRes val message: Int) : UiEffect()
         data class NavigateToQRDetail(val qrProxy: String) : UiEffect()
+        class NavigateToQRHistory() : UiEffect()
+        class NavigateToGenerate() : UiEffect()
     }
 }

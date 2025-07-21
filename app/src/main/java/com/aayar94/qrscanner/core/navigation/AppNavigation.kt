@@ -42,7 +42,13 @@ fun AppNavigation(onFinishApp: () -> Unit) {
             navController = navController,
             startDestination = ONBOARDING
         ) {
-            composable(HOME) { HomeScreenContainer() }
+            composable(HOME) {
+                HomeScreenContainer(
+                    onNavigateToQRDetail = {},
+                    onNavigateToGenerate = {},
+                    onNavigateToQRHistory = {}
+                )
+            }
             composable(SCAN) { QrScannerScreen(result = {}) }
             composable(ONBOARDING) {
                 OnboardingScreenContainer(onPermissionResult = { permissionResult ->

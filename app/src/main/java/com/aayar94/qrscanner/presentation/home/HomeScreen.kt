@@ -15,6 +15,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,11 +61,34 @@ import com.aayar94.qrscanner.presentation.QrScannerView
 
 
 @Composable
-fun HomeScreenContainer(modifier: Modifier = Modifier) {
+fun HomeScreenContainer(
+    modifier: Modifier = Modifier,
+    onNavigateToQRDetail: () -> Unit,
+    onNavigateToGenerate: () -> Unit,
+    onNavigateToQRHistory: () -> Unit,
+) {
     val vm: HomeViewModel = hiltViewModel<HomeViewModel>()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val uiEffect by vm.uiEffect.collectAsStateWithLifecycle(null)
     val onAction = vm::onAction
+    LaunchedEffect(uiEffect) {
+        when (uiEffect) {
+            is HomeScreenContract.UiEffect.NavigateToQRDetail -> {
+                onNavigateToQRDetail.invoke()
+            }
+
+            is HomeScreenContract.UiEffect.ShowError -> {}
+            is HomeScreenContract.UiEffect.NavigateToGenerate -> {
+                onNavigateToGenerate.invoke()
+            }
+
+            is HomeScreenContract.UiEffect.NavigateToQRHistory -> {
+                onNavigateToQRHistory.invoke()
+            }
+
+            null -> {}
+        }
+    }
     HomeScreen(uiState, uiEffect, onAction)
 }
 
@@ -79,38 +103,6 @@ fun HomeScreen(
         QrScannerScreen(modifier = Modifier, {
             onAction.invoke(HomeScreenContract.UiAction.OnQRCodeScanned(it))
         })
-        /*Row(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .wrapContentHeight()
-                .padding(top = 48.dp)
-                .padding(horizontal = 8.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    Color.Black.copy(alpha = 0.7f), shape = RoundedCornerShape(24.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Icon(
-                modifier = Modifier.padding(4.dp),
-                imageVector = Icons.Outlined.BrowseGallery,
-                tint = Color.White,
-                contentDescription = "Gallery"
-            )
-            Icon(
-                modifier = Modifier.padding(4.dp),
-                imageVector = Icons.Outlined.FlashlightOn,
-                tint = Color.White,
-                contentDescription = "Flashlight"
-            )
-            Icon(
-                modifier = Modifier.padding(4.dp),
-                imageVector = Icons.Outlined.Cameraswitch,
-                tint = Color.White,
-                contentDescription = "Camera Switch"
-            )
-        }*/
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.7f)
@@ -123,11 +115,7 @@ fun HomeScreen(
 
         ) {
             val isVisible = uiState.qrProxy != null
-
-            // Control border animation
             val borderAlpha = remember { Animatable(0f) }
-
-            // Start shining animation when visible
             LaunchedEffect(isVisible) {
                 if (isVisible) {
                     repeat(5) {
@@ -144,12 +132,11 @@ fun HomeScreen(
                     borderAlpha.snapTo(0f)
                 }
             }
-
             AnimatedVisibility(
                 visible = isVisible,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(bottom = 12.dp)
+                    .padding(bottom = 36.dp)
                     .zIndex(3f),
                 enter = fadeIn() + expandIn(),
                 exit = fadeOut() + shrinkOut()
@@ -183,23 +170,43 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
+                Column(
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(32.dp),
-                    imageVector = Icons.Outlined.QrCode,
-                    tint = Color.White,
-                    contentDescription = "Generate"
-                )
+                        .clickable {
+                            onAction.invoke(HomeScreenContract.UiAction.NavigateToGenerate)
+                        },
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp),
+                        imageVector = Icons.Outlined.QrCode,
+                        tint = Color.White,
+                        contentDescription = "Generate"
+                    )
+                    Text("Generate", color = Color.White)
+                }
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
+                Column(
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(32.dp),
-                    imageVector = Icons.Outlined.History,
-                    tint = Color.White,
-                    contentDescription = "History"
-                )
+                        .clickable {
+                            onAction.invoke(HomeScreenContract.UiAction.NavigateToQRHistory)
+                        },
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(32.dp),
+                        imageVector = Icons.Outlined.History,
+                        tint = Color.White,
+                        contentDescription = "History"
+                    )
+                    Text("History", color = Color.White)
+                }
             }
         }
 
