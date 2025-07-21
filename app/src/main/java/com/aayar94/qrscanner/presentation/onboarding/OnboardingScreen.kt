@@ -1,15 +1,14 @@
 package com.aayar94.qrscanner.presentation.onboarding
 
-import android.view.RoundedCorner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,15 +18,20 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -36,24 +40,64 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aayar94.qrscanner.R
-import com.aayar94.qrscanner.core.theme.theme.QRScannerTheme
+import com.aayar94.qrscanner.core.RequestCameraPermission
+import com.aayar94.qrscanner.core.theme.Gray
+import com.aayar94.qrscanner.core.theme.QRScannerTheme
+import com.aayar94.qrscanner.core.theme.Yellow
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OnboardingScreenContainer(modifier: Modifier = Modifier) {
-    OnboardingScreen()
+fun OnboardingScreenContainer(
+    modifier: Modifier = Modifier,
+    onPermissionResult: (Boolean) -> Unit
+) {
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { true }
+    )
+    val coroutineScope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = bottomSheetState,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("For the scan qr code feature, we need access your camera permission.")
+                Spacer(modifier = Modifier.height(8.dp))
+                RequestCameraPermission() { permissionRequestResult ->
+                    showBottomSheet = false
+                    onPermissionResult.invoke(permissionRequestResult)
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
+
+    OnboardingScreen(
+        onLetsGoClick = {
+            showBottomSheet = true
+            coroutineScope.launch {
+                bottomSheetState.show()
+            }
+        }
+    )
 }
 
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier) {
+fun OnboardingScreen(modifier: Modifier = Modifier, onLetsGoClick: () -> Unit) {
     val context = LocalContext.current
-    val colors = listOf(
-        Color(context.getColor(R.color.lime_green)),
-        Color(context.getColor(R.color.cotton_blue))
-    )
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(brush = Brush.linearGradient(colors)),
+            .background(Gray),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -67,13 +111,13 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(250.dp)
                     .aspectRatio(1f),
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.ic_launcher_onboarding),
                 contentDescription = null, contentScale = ContentScale.Fit
             )
             Spacer(Modifier.height(24.dp))
             Text(
                 "Go and enjoy our features for free and make your life easy with us.",
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center, color = Yellow
             )
             Spacer(Modifier.height(36.dp))
             Row(
@@ -81,15 +125,18 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
                     .fillMaxWidth(0.8f)
                     .height(48.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color.Black),
+                    .background(Yellow)
+                    .clickable {
+                        onLetsGoClick.invoke()
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("Let's Go", color = Color.White)
+                Text("Let's Go", color = Color.Black)
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
         }
@@ -100,6 +147,6 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun OnboardingScreenPreview() {
     QRScannerTheme {
-        OnboardingScreen()
+        OnboardingScreen(onLetsGoClick = {})
     }
 }

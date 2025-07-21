@@ -1,4 +1,4 @@
-package com.aayar94.qrscanner.core.theme.theme
+package com.aayar94.qrscanner.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
