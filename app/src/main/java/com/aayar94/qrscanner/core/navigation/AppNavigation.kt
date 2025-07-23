@@ -18,13 +18,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_By_CATEGORY
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_BY_CATEGORY
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_QR
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HISTORY
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HOME
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.ONBOARDING
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SCAN
 import com.aayar94.qrscanner.presentation.generate.GenerateScreenContainer
+import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryScreenContainer
 import com.aayar94.qrscanner.presentation.history.HistoryScreenContainer
 import com.aayar94.qrscanner.presentation.home.HomeScreenContainer
 import com.aayar94.qrscanner.presentation.home.QrScannerScreen
@@ -50,8 +52,8 @@ fun AppNavigation(onFinishApp: () -> Unit) {
         ) {
             composable(HOME) {
                 HomeScreenContainer(
-                    onNavigateToQRDetail = {navController.navigate(QR_DETAIL)},
-                    onNavigateToGenerate = {navController.navigate(GENERATE_By_CATEGORY)},
+                    onNavigateToQRDetail = { navController.navigate(QR_DETAIL) },
+                    onNavigateToGenerate = { navController.navigate(GENERATE_BY_CATEGORY) },
                     onNavigateToQRHistory = { navController.navigate(HISTORY) }
                 )
             }
@@ -90,8 +92,17 @@ fun AppNavigation(onFinishApp: () -> Unit) {
             composable(HISTORY) {
                 HistoryScreenContainer()
             }
-            composable(GENERATE_By_CATEGORY) {
+            composable(GENERATE_BY_CATEGORY) {
+                GenerateByCategoryScreenContainer(onCategorySelected = { categoryId ->
+                    navController.navigate("$GENERATE_QR/$categoryId")
+                })
+            }
+            composable(GENERATE_QR) {
                 GenerateScreenContainer()
+            }
+            composable("$GENERATE_QR/{categoryId}") { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getString("categoryId")
+                GenerateScreenContainer(categoryId)
             }
             composable(QR_DETAIL) {
                 QRDetailScreenContainer()
