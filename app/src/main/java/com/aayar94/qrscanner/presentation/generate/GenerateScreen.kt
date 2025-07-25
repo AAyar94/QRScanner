@@ -1,30 +1,36 @@
 package com.aayar94.qrscanner.presentation.generate
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ContentPasteGo
-import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,27 +40,46 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.core.theme.Gray
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
-import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryContact
+import com.aayar94.qrscanner.domain.model.QRCategory
+
 
 @Composable
-fun GenerateScreenContainer(categoryId: String? = null) {
+fun GenerateScreenContainer(categoryId: Int? = null, navigateBack: () -> Unit) {
     val vm: GenerateQRViewModel = hiltViewModel()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val uiEffect by vm.uiEffect.collectAsStateWithLifecycle(null)
     val uiAction = vm::onAction
 
+    LaunchedEffect(categoryId) {
+        categoryId?.let {
+            uiAction.invoke(
+                GenerateQRContact.UiAction.CategoryPickedInitalizeUI(
+                    it
+                )
+            )
+        }
+    }
+
     LaunchedEffect(uiEffect) {
         when (uiEffect) {
             null -> {}
+            GenerateQRContact.UiEffect.OnNavigateBack -> {
+                navigateBack.invoke()
+            }
         }
     }
 
@@ -65,12 +90,17 @@ fun GenerateScreenContainer(categoryId: String? = null) {
 private fun GenerateScreen(
     uiState: GenerateQRContact.UiState,
     uiEffect: GenerateQRContact.UiEffect?,
-    uiAction: (GenerateByCategoryContact.UiAction) -> Unit
+    uiAction: (GenerateQRContact.UiAction) -> Unit
 ) {
+    val clipboardManager = LocalClipboard.current
+    val text = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
     Box(
         Modifier
             .fillMaxSize()
             .background(Gray)
+            .consumeWindowInsets(WindowInsets.ime)
+            .padding(WindowInsets.ime.asPaddingValues())
     ) {
         Column(
             modifier = Modifier
@@ -89,7 +119,12 @@ private fun GenerateScreen(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black.copy(0.7f), RoundedCornerShape(12.dp)),
+                        .background(Color.Black.copy(0.7f), RoundedCornerShape(12.dp))
+                        .clickable {
+                            uiAction.invoke(
+                                GenerateQRContact.UiAction.onBackPressed
+                            )
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -121,42 +156,74 @@ private fun GenerateScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .wrapContentHeight()
                             .padding(16.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        val text = remember { mutableStateOf("") }
-                        Icon(Icons.Default.TextFields, contentDescription = "Text", tint = Yellow)
+                        uiState.selectedCategory?.icon?.let {
+                            Image(
+                                painter = painterResource(it),
+                                contentDescription = "Text",
+                            )
+                        }
                         Text(
                             text = "Type title",
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth(),
                             color = Color.White
                         )
-                        val state = rememberTextFieldState()
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            BasicTextField(
-                                state = state,
+                            TextField(
+                                value = uiState.uriText ?: "",
+                                onValueChange = { newValue: String ->
+                                    uiAction.invoke(
+                                        GenerateQRContact.UiAction.OnUpdateUriText(
+                                            uriText = newValue
+                                        )
+                                    )
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth(0.8f)
                                     .padding(vertical = 12.dp)
-                                    .height(40.dp)
+                                    .wrapContentHeight()
                                     .border(
                                         color = Color.White.copy(0.7f),
                                         shape = RoundedCornerShape(4.dp),
                                         width = 1.dp
                                     )
                                     .background(Color.Black.copy(0.7f), RoundedCornerShape(4.dp)),
-                                enabled = true,
-                                readOnly = false,
-                                textStyle = MaterialTheme.typography.bodyMedium,
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    focusedContainerColor = Color.Black,
+                                    unfocusedTextColor = Color.White,
+                                    unfocusedContainerColor = Color.Black,
+                                    disabledTextColor = Color.White,
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        keyboardController?.hide()
+                                    }
+                                )
                             )
                             IconButton(
-                                onClick = {},
+                                onClick = {
+                                    val clipText = clipboardManager.nativeClipboard.text
+                                    if (clipText != null) {
+                                        uiAction.invoke(
+                                            GenerateQRContact.UiAction.onPasteClicked(
+                                                clipText.toString()
+                                            )
+                                        )
+                                    }
+                                },
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .size(30.dp, 30.dp)
@@ -175,7 +242,15 @@ private fun GenerateScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth(0.7f)
-                                .background(Yellow, RoundedCornerShape(4.dp)),
+                                .background(Yellow, RoundedCornerShape(4.dp))
+                                .clickable {
+                                    uiAction.invoke(
+                                        GenerateQRContact.UiAction.OnSaveQrCode(
+                                            uiState.uriText.toString(),
+                                            uiState.selectedCategory!!
+                                        )
+                                    )
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -196,7 +271,9 @@ private fun GenerateScreen(
 private fun GenerateScreenPreview() {
     QRScannerTheme {
         GenerateScreen(
-            uiState = GenerateQRContact.UiState(),
+            uiState = GenerateQRContact.UiState(
+                selectedCategory = QRCategory(2, R.string.category_website, R.drawable.ic_internet)
+            ),
             uiEffect = null
         ) {}
     }

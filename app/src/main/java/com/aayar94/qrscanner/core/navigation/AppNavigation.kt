@@ -97,12 +97,11 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                     navController.navigate("$GENERATE_QR/$categoryId")
                 })
             }
-            composable(GENERATE_QR) {
-                GenerateScreenContainer()
-            }
             composable("$GENERATE_QR/{categoryId}") { backStackEntry ->
                 val categoryId = backStackEntry.arguments?.getString("categoryId")
-                GenerateScreenContainer(categoryId)
+                GenerateScreenContainer(categoryId?.toIntOrNull(), navigateBack = {
+                    navController.popBackStack()
+                })
             }
             composable(QR_DETAIL) {
                 QRDetailScreenContainer()

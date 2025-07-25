@@ -40,6 +40,12 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onAction(action: GenerateByCategoryContact.UiAction) {
-
+        when (action) {
+            is GenerateByCategoryContact.UiAction.OnCategorySelected -> {
+                viewModelScope.launch {
+                    _uiEffect.send(GenerateByCategoryContact.UiEffect.OnNavigateToGenerateQR(action.categoryId))
+                }
+            }
+        }
     }
 }
