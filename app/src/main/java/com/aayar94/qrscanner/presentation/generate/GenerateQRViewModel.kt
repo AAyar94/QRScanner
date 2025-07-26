@@ -2,6 +2,7 @@ package com.aayar94.qrscanner.presentation.generate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.domain.use_case.GetQRCategoryListUseCase
 import com.akansh.qrsmith.QRSmith
 import com.akansh.qrsmith.model.QRCodeOptions
@@ -60,7 +61,7 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
             }
 
             is GenerateQRContact.UiAction.OnGeneraQrCode -> {
-                createQRCode(action.qrProxy)
+                createQRCode(action.qrProxy, action.category, action.bgColor, action.fgColor)
             }
         }
     }
@@ -86,12 +87,12 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun createQRCode(uriString: String) {
+    fun createQRCode(uriString: String, qrCategory: QRCategory, bgColor: Int, fgColor: Int) {
         val options = QRCodeOptions.Builder()
             .setWidth(500)
             .setHeight(500)
-            .setForegroundColor(com.aayar94.qrscanner.R.color.black)
-            .setBackgroundColor(com.aayar94.qrscanner.R.color.white)
+            .setForegroundColor(fgColor)
+            .setBackgroundColor(bgColor)
             .setPatternStyle(QRStyles.PatternStyle.SQUARE)
             .setEyeFrameShape(QRStyles.EyeFrameShape.SQUARE)
             .setEyeBallShape(QRStyles.EyeBallShape.SQUARE)
@@ -105,8 +106,8 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
             }
             onAction(
                 GenerateQRContact.UiAction.OnSaveQrCode(
-                    uiState.value.generatedQRCode!!,
-                    uiState.value.selectedCategory!!,
+                    qrCode,
+                    qrCategory,
                     uiState.value.uriText.toString()
                 )
             )

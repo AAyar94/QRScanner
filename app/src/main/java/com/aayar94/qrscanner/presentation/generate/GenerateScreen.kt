@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aayar94.qrscanner.R
@@ -108,6 +110,7 @@ private fun GenerateScreen(
     val clipboardManager = LocalClipboard.current
     val text = remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     Box(
         Modifier
             .fillMaxSize()
@@ -259,8 +262,13 @@ private fun GenerateScreen(
                                 .clickable {
                                     uiAction.invoke(
                                         GenerateQRContact.UiAction.OnGeneraQrCode(
-                                            uiState.uriText.toString(),
-                                            uiState.selectedCategory!!
+                                            qrProxy = uiState.uriText.toString(),
+                                            category = uiState.selectedCategory!!,
+                                            bgColor = ContextCompat.getColor(
+                                                context,
+                                                R.color.white
+                                            ),
+                                            fgColor = ContextCompat.getColor(context, R.color.black)
                                         )
                                     )
                                 },

@@ -16,7 +16,13 @@ object GenerateQRContact {
     sealed class UiAction {
         data object onBackPressed : UiAction()
         data class OnUpdateUriText(val uriText: String) : UiAction()
-        data class OnGeneraQrCode(val qrProxy: String, val category: QRCategory) : UiAction()
+        data class OnGeneraQrCode(
+            val qrProxy: String,
+            val category: QRCategory,
+            val bgColor: Int,
+            val fgColor: Int
+        ) : UiAction()
+
         data class OnSaveQrCode(val qrCode: Bitmap, val category: QRCategory, val qrProxy: String) :
             UiAction()
 
