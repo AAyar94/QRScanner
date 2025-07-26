@@ -96,7 +96,11 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                 })
             }
             composable(HISTORY) {
-                HistoryScreenContainer()
+                HistoryScreenContainer(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateSettings = { navController.navigate(SETTINGS) },
+                    onNavigateDetail = {}
+                )
             }
             composable(GENERATE_BY_CATEGORY) {
                 GenerateByCategoryScreenContainer(onCategorySelected = { categoryId ->
