@@ -1,5 +1,6 @@
 package com.aayar94.qrscanner.presentation.generate
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,7 +59,11 @@ import com.aayar94.qrscanner.domain.model.QRCategory
 
 
 @Composable
-fun GenerateScreenContainer(categoryId: Int? = null, navigateBack: () -> Unit) {
+fun GenerateScreenContainer(
+    categoryId: Int? = null,
+    navigateBack: () -> Unit,
+    onSaveQR: (Bitmap, QRCategory, String) -> Unit
+) {
     val vm: GenerateQRViewModel = hiltViewModel()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val uiEffect by vm.uiEffect.collectAsStateWithLifecycle(null)
@@ -79,6 +84,14 @@ fun GenerateScreenContainer(categoryId: Int? = null, navigateBack: () -> Unit) {
             null -> {}
             GenerateQRContact.UiEffect.OnNavigateBack -> {
                 navigateBack.invoke()
+            }
+
+            is GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail -> {
+                onSaveQR.invoke(
+                    (uiEffect as GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail).qrCode,
+                    (uiEffect as GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail).category,
+                    (uiEffect as GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail).qrProxy
+                )
             }
         }
     }
@@ -245,7 +258,7 @@ private fun GenerateScreen(
                                 .background(Yellow, RoundedCornerShape(4.dp))
                                 .clickable {
                                     uiAction.invoke(
-                                        GenerateQRContact.UiAction.OnSaveQrCode(
+                                        GenerateQRContact.UiAction.OnGeneraQrCode(
                                             uiState.uriText.toString(),
                                             uiState.selectedCategory!!
                                         )
@@ -274,7 +287,8 @@ private fun GenerateScreenPreview() {
             uiState = GenerateQRContact.UiState(
                 selectedCategory = QRCategory(2, R.string.category_website, R.drawable.ic_internet)
             ),
-            uiEffect = null
-        ) {}
+            uiEffect = null,
+            uiAction = {}
+        )
     }
 }

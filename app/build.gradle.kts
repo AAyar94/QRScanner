@@ -88,4 +88,6 @@ dependencies {
     implementation(libs.haze.materials)
 
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.qrsmith)
 }

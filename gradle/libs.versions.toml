@@ -19,6 +19,7 @@ haze = "1.6.9"
 hiltAndroid = "2.57"
 hiltNavigationCompose = "1.2.0"
 materialIconsExtended = "1.7.8"
+qrsmith = "2.1.0"
 roomCompilerVersion = "2.7.2"
 roomKtx = "2.7.2"
 roomRuntime = "2.7.2"
@@ -67,6 +68,7 @@ haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
+qrsmith = { module = "com.github.akanshSirohi:QRSmith", version.ref = "qrsmith" }
 
 
 [plugins]

@@ -1,6 +1,7 @@
 package com.aayar94.qrscanner.core.navigation
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATED_QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_BY_CATEGORY
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.GENERATE_QR
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HISTORY
@@ -25,8 +27,10 @@ import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HOME
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.ONBOARDING
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SCAN
+import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.presentation.generate.GenerateScreenContainer
 import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryScreenContainer
+import com.aayar94.qrscanner.presentation.generated_qr_detail.GeneratedQRDetailScreenContainer
 import com.aayar94.qrscanner.presentation.history.HistoryScreenContainer
 import com.aayar94.qrscanner.presentation.home.HomeScreenContainer
 import com.aayar94.qrscanner.presentation.home.QrScannerScreen
@@ -101,11 +105,36 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                 val categoryId = backStackEntry.arguments?.getString("categoryId")
                 GenerateScreenContainer(categoryId?.toIntOrNull(), navigateBack = {
                     navController.popBackStack()
+                }, onSaveQR = { qrBitmap, qrCategory, qrProxy ->
+                    navController.currentBackStackEntry?.savedStateHandle?.set("qrBitmap", qrBitmap)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("qrProxy", qrProxy)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "qrCategory",
+                        qrCategory
+                    )
+                    navController.navigate(GENERATED_QR_DETAIL)
                 })
             }
+            composable(GENERATED_QR_DETAIL) {
+                val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
+                val qrBitmap = savedStateHandle?.get<Bitmap>("qrBitmap")
+                val qrCategory = savedStateHandle?.get<QRCategory>("qrCategory")
+                val qrProxy = savedStateHandle?.get<String>("qrProxy")
+                qrCategory?.let { it1 ->
+                    qrProxy?.let { qrProxy1 ->
+                        GeneratedQRDetailScreenContainer(
+                            qrBitmap,
+                            it1,
+                            qrProxy1
+                        )
+                    }
+                }
+            }
+
             composable(QR_DETAIL) {
                 QRDetailScreenContainer()
             }
+
         }
 
     }

@@ -8,6 +8,7 @@ object NavigationRoutes {
     const val HISTORY = "history"
     const val GENERATE_BY_CATEGORY = "generate_from_category"
     const val GENERATE_QR = "generate_qr"
+    const val GENERATED_QR_DETAIL = "generated_qr_detail"
     const val QR_DETAIL = "qr_detail"
     const val SETTINGS = "settings"
     const val ABOUT = "about"
