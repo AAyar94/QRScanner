@@ -11,11 +11,13 @@ object GenerateByCategoryContact {
 
     sealed class UiAction {
         data class OnCategorySelected(val categoryId: Int) : UiAction()
+        data object OnSettingsSelected : UiAction()
 
     }
 
     sealed class UiEffect {
         data class OnNavigateToGenerateQR(val categoryId: Int) : UiEffect()
+        data object OnSettingsSelected : UiEffect()
     }
 
 }

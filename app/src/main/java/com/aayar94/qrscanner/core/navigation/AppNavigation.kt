@@ -27,6 +27,7 @@ import com.aayar94.qrscanner.core.navigation.NavigationRoutes.HOME
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.ONBOARDING
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SCAN
+import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SETTINGS
 import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.presentation.generate.GenerateScreenContainer
 import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryScreenContainer
@@ -36,6 +37,7 @@ import com.aayar94.qrscanner.presentation.home.HomeScreenContainer
 import com.aayar94.qrscanner.presentation.home.QrScannerScreen
 import com.aayar94.qrscanner.presentation.onboarding.OnboardingScreenContainer
 import com.aayar94.qrscanner.presentation.qr_detail.QRDetailScreenContainer
+import com.aayar94.qrscanner.presentation.settings.SettingsScreenContainer
 import kotlinx.coroutines.launch
 
 @Composable
@@ -99,6 +101,8 @@ fun AppNavigation(onFinishApp: () -> Unit) {
             composable(GENERATE_BY_CATEGORY) {
                 GenerateByCategoryScreenContainer(onCategorySelected = { categoryId ->
                     navController.navigate("$GENERATE_QR/$categoryId")
+                }, onSettingsSelected = {
+                    navController.navigate(SETTINGS)
                 })
             }
             composable("$GENERATE_QR/{categoryId}") { backStackEntry ->
@@ -133,6 +137,12 @@ fun AppNavigation(onFinishApp: () -> Unit) {
 
             composable(QR_DETAIL) {
                 QRDetailScreenContainer()
+            }
+
+            composable(SETTINGS) {
+                SettingsScreenContainer(
+                    onBackPressed = { navController.popBackStack() }
+                )
             }
 
         }

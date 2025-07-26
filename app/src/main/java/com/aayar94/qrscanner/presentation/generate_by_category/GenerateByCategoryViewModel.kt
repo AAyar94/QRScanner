@@ -3,6 +3,7 @@ package com.aayar94.qrscanner.presentation.generate_by_category
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aayar94.qrscanner.domain.use_case.GetQRCategoryListUseCase
+import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryContact.UiEffect.OnNavigateToGenerateQR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -43,7 +44,13 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
         when (action) {
             is GenerateByCategoryContact.UiAction.OnCategorySelected -> {
                 viewModelScope.launch {
-                    _uiEffect.send(GenerateByCategoryContact.UiEffect.OnNavigateToGenerateQR(action.categoryId))
+                    _uiEffect.send(OnNavigateToGenerateQR(action.categoryId))
+                }
+            }
+
+            GenerateByCategoryContact.UiAction.OnSettingsSelected -> {
+                viewModelScope.launch {
+                    _uiEffect.send(GenerateByCategoryContact.UiEffect.OnSettingsSelected)
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.aayar94.qrscanner.presentation.generate_by_category
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,10 @@ import com.aayar94.qrscanner.core.theme.Yellow
 import com.aayar94.qrscanner.domain.model.QRCategory
 
 @Composable
-fun GenerateByCategoryScreenContainer(onCategorySelected: (Int) -> Unit) {
+fun GenerateByCategoryScreenContainer(
+    onCategorySelected: (Int) -> Unit,
+    onSettingsSelected: () -> Unit
+) {
     val vm: GenerateByCategoryViewModel = hiltViewModel()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val uiEffect by vm.uiEffect.collectAsStateWithLifecycle(null)
@@ -50,6 +54,7 @@ fun GenerateByCategoryScreenContainer(onCategorySelected: (Int) -> Unit) {
             }
 
             null -> {}
+            GenerateByCategoryContact.UiEffect.OnSettingsSelected -> onSettingsSelected.invoke()
         }
     }
 
@@ -89,6 +94,9 @@ private fun GenerateByCategoryScreen(
                             Color.Black,
                             shape = RoundedCornerShape(12.dp)
                         )
+                        .clickable {
+                            uiAction.invoke(GenerateByCategoryContact.UiAction.OnSettingsSelected)
+                        }
                 ) {
                     Icon(
                         modifier = Modifier

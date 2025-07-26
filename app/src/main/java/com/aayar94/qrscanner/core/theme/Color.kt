@@ -13,3 +13,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val Yellow = Color(0xffFDB623)
 val Gray = Color(0xff333333)
+val GrayBlack = Color(0xff222222)
+val SurfaceGray = Color(0xF2333333)
