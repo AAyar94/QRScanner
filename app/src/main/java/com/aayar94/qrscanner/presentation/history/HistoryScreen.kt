@@ -162,7 +162,7 @@ private fun HistoryScreen(
                     Tab(
                         selected = uiState.selectedSection == 1,
                         onClick = {
-                            uiAction.invoke(HistoryScreenContact.UiAction.OnSectionSelected(0))
+                            uiAction.invoke(HistoryScreenContact.UiAction.OnSectionSelected(1))
                         },
                         modifier = Modifier
                             .height(60.dp)
@@ -206,7 +206,7 @@ private fun HistoryScreen(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 private fun HistoryScreenPreview() {
     QRScannerTheme {
@@ -214,6 +214,7 @@ private fun HistoryScreenPreview() {
             uiState = HistoryScreenContact.UiState(
                 selectedSection = 1, list = listOf(
                     HistoryItem(
+                        id = 1,
                         "Tenda v12 Wifi",
                         QRCategory(3, R.string.category_wifi, R.drawable.ic_wifi),
                         LocalDateTime.now()
@@ -236,4 +237,4 @@ private fun HistoryScreenPreview() {
             uiAction = { }
         )
     }
-}
+}*/

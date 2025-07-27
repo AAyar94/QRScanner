@@ -47,7 +47,7 @@ class GenerateQRViewModel @Inject constructor(
             }
 
             is GenerateQRContact.UiAction.OnSaveQrCode -> {
-                saveQRCode(
+                onCreatedQRCode(
                     action.qrCode,
                     action.category,
                     action.qrProxy
@@ -119,24 +119,12 @@ class GenerateQRViewModel @Inject constructor(
 
     }
 
-    fun saveQRCode(
+    fun onCreatedQRCode(
         qrCode: Bitmap,
         category: QRCategory,
         qrProxy: String
     ) {
         viewModelScope.launch {
-
-            repository.insertHistoryItem(
-                HistoryItemEntity(
-                    id = 1,
-                    qrCode = qrCode,
-                    uriProxy = qrProxy,
-                    category = category,
-                    time = LocalDateTime.now(),
-                    isCreated = true
-                )
-            )
-
             _uiEffect.send(
                 GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail(
                     qrCode,

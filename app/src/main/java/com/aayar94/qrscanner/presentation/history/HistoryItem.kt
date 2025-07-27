@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,15 +21,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.core.theme.GrayBlack
-import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
 import com.aayar94.qrscanner.domain.model.HistoryItem
-import com.aayar94.qrscanner.domain.model.QRCategory
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -92,7 +87,7 @@ fun HistoryItem(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 private fun HistoryItemPreview() {
     QRScannerTheme {
@@ -107,4 +102,4 @@ private fun HistoryItemPreview() {
             onNavigateToDetails = {}
         )
     }
-}
+}*/

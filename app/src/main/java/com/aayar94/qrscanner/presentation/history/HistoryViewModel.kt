@@ -2,7 +2,10 @@ package com.aayar94.qrscanner.presentation.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
+import com.aayar94.qrscanner.data.repository.QRScannerRepository
 import com.aayar94.qrscanner.domain.model.HistoryItem
+import com.aayar94.qrscanner.domain.model.toHistoryItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class HistoryViewModel @Inject constructor() : ViewModel() {
+class HistoryViewModel @Inject constructor(
+    private val repository: QRScannerRepository
+) : ViewModel() {
 
     val _uiState = MutableStateFlow(HistoryScreenContact.UiState())
     val uiState = _uiState.asStateFlow()
@@ -27,9 +32,9 @@ class HistoryViewModel @Inject constructor() : ViewModel() {
 
     fun onAction(action: HistoryScreenContact.UiAction) {
         when (action) {
-            HistoryScreenContact.UiAction.LoadMore -> TODO()
+            HistoryScreenContact.UiAction.LoadMore -> {}
             is HistoryScreenContact.UiAction.OnDeleteHistoryItem -> {
-
+                deleteHistoryItem(action.historyItem)
             }
 
             is HistoryScreenContact.UiAction.OnSectionSelected -> {
@@ -51,16 +56,33 @@ class HistoryViewModel @Inject constructor() : ViewModel() {
     }
 
     fun loadData() {
-        page = 1
-
-    }
-
-    fun loadMore() {
-        page += 1
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val list = if (selectedSection == 0) {
+                repository.getAllScannedHistory()
+            } else {
+                repository.getAllCreatedHistory()
+            }
+            _uiState.update { it.copy(isLoading = false, list = list.map { it.toHistoryItem() }) }
+        }
     }
 
     fun deleteHistoryItem(historyItem: HistoryItem) {
-
+        viewModelScope.launch {
+            repository.deleteHistoryItem(
+                HistoryItemEntity(
+                    historyItem.id,
+                    historyItem.qrCode,
+                    historyItem.uriProxy,
+                    historyItem.category,
+                    historyItem.time,
+                    if (selectedSection == 0) false else true
+                )
+            )
+            val currentList = uiState.value.list.toMutableList()
+            currentList.remove(historyItem)
+            _uiState.update { it.copy(list = currentList) }
+        }
     }
 
     fun onSectionSelected(section: Int) {

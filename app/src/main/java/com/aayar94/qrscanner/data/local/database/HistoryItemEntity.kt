@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 
 @Entity(tableName = "history_item_table")
 data class HistoryItemEntity(
-    @PrimaryKey(autoGenerate = false)
-    val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val qrCode: Bitmap,
     val uriProxy: String,
     val category: QRCategory,
