@@ -1,5 +1,6 @@
 package com.aayar94.qrscanner.presentation.history
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,18 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.core.theme.Gray
 import com.aayar94.qrscanner.core.theme.GrayBlack
-import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
 import com.aayar94.qrscanner.domain.model.HistoryItem
-import com.aayar94.qrscanner.domain.model.QRCategory
-import java.time.LocalDateTime
 
 @Composable
 fun HistoryScreenContainer(
@@ -106,13 +103,11 @@ private fun HistoryScreen(
                 Box(
                     modifier = Modifier
                         .background(
-                            Color.Black,
-                            shape = RoundedCornerShape(12.dp)
+                            Color.Black, shape = RoundedCornerShape(12.dp)
                         )
                         .clickable {
 
-                        }
-                ) {
+                        }) {
                     Icon(
                         modifier = Modifier
                             .padding(8.dp)
@@ -123,16 +118,39 @@ private fun HistoryScreen(
                     )
                 }
             }
+            Spacer(Modifier.height(12.dp))
+            val tab0Color by animateColorAsState(
+                targetValue = if (uiState.selectedSection == 0) Yellow else GrayBlack,
+                label = "Tab0Color"
+            )
+            val tab0Shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 0.dp,
+                bottomEnd = 0.dp,
+                bottomStart = 16.dp
+            )
+            val tab1Color by animateColorAsState(
+                targetValue = if (uiState.selectedSection == 1) Yellow else GrayBlack,
+                label = "Tab1Color"
+            )
+            val tab1Shape =
+                RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 16.dp,
+                    bottomEnd = 16.dp,
+                    bottomStart = 0.dp
+                )
+
+
             Box(
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .background(GrayBlack, RoundedCornerShape(4.dp))
+                    .background(GrayBlack, RoundedCornerShape(24.dp))
             ) {
                 TabRow(
                     uiState.selectedSection,
                     modifier = Modifier
-                        .background(GrayBlack, RoundedCornerShape(4.dp))
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(8.dp),
@@ -147,59 +165,60 @@ private fun HistoryScreen(
                         },
                         modifier = Modifier
                             .background(
-                                color = if (uiState.selectedSection == 0) Yellow else GrayBlack,
-                                shape = if (uiState.selectedSection == 0) RoundedCornerShape(16.dp) else RoundedCornerShape(
-                                    0.dp
-                                )
+                                color = tab0Color,
+                                shape = tab0Shape
                             )
                             .padding(8.dp),
                     ) {
                         Text(
-                            text = "Scan",
-                            color = Color.White
+                            text = "Scan", color = Color.White
                         )
                     }
                     Tab(
-                        selected = uiState.selectedSection == 1,
-                        onClick = {
+                        selected = uiState.selectedSection == 1, onClick = {
                             uiAction.invoke(HistoryScreenContact.UiAction.OnSectionSelected(1))
-                        },
-                        modifier = Modifier
+                        }, modifier = Modifier
                             .height(60.dp)
                             .background(
-                                color = if (uiState.selectedSection == 1) Yellow else GrayBlack,
-                                shape = if (uiState.selectedSection == 1) RoundedCornerShape(16.dp) else RoundedCornerShape(
-                                    0.dp
-                                )
+                                color = tab1Color,
+                                shape = tab1Shape
                             )
                             .padding(8.dp)
                     ) {
                         Text(
-                            text = "Create",
-                            color = Color.White
+                            text = "Create", color = Color.White
                         )
                     }
                 }
             }
             Spacer(Modifier.height(12.dp))
-            LazyColumn(
-                state = state, modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                itemsIndexed(uiState.list) { index, item ->
-                    HistoryItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        historyItem = item,
-                        onDeleteItem = {
-                            uiAction.invoke(HistoryScreenContact.UiAction.OnDeleteHistoryItem(it))
-                        },
-                        onNavigateToDetails = {
-                            uiAction.invoke(HistoryScreenContact.UiAction.OnNavigateToDetail(item))
-                        }
-                    )
+            if (uiState.list.isEmpty()) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Text("No History", color = Color.White)
+                }
+            } else {
+                LazyColumn(
+                    state = state, modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    itemsIndexed(uiState.list) { index, item ->
+                        HistoryItem(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            historyItem = item,
+                            onDeleteItem = {
+                                uiAction.invoke(HistoryScreenContact.UiAction.OnDeleteHistoryItem(it))
+                            },
+                            onNavigateToDetails = {
+                                uiAction.invoke(
+                                    HistoryScreenContact.UiAction.OnNavigateToDetail(
+                                        item
+                                    )
+                                )
+                            })
+                    }
                 }
             }
         }
