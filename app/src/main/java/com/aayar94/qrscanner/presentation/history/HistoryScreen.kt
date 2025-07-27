@@ -43,7 +43,7 @@ import com.aayar94.qrscanner.domain.model.HistoryItem
 fun HistoryScreenContainer(
     onNavigateBack: () -> Unit,
     onNavigateSettings: () -> Unit,
-    onNavigateDetail: (HistoryItem) -> Unit
+    onNavigateDetail: (HistoryItem) -> Unit,
 ) {
     val vm: HistoryViewModel = hiltViewModel()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -106,7 +106,7 @@ private fun HistoryScreen(
                             Color.Black, shape = RoundedCornerShape(12.dp)
                         )
                         .clickable {
-
+                            uiAction.invoke(HistoryScreenContact.UiAction.OnSettingsClicked)
                         }) {
                     Icon(
                         modifier = Modifier
