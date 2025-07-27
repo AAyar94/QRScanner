@@ -138,7 +138,7 @@ private fun GenerateScreen(
                         .background(Color.Black.copy(0.7f), RoundedCornerShape(12.dp))
                         .clickable {
                             uiAction.invoke(
-                                GenerateQRContact.UiAction.onBackPressed
+                                GenerateQRContact.UiAction.OnBackPressed
                             )
                         },
                     contentAlignment = Alignment.Center
@@ -234,7 +234,7 @@ private fun GenerateScreen(
                                     val clipText = clipboardManager.nativeClipboard.text
                                     if (clipText != null) {
                                         uiAction.invoke(
-                                            GenerateQRContact.UiAction.onPasteClicked(
+                                            GenerateQRContact.UiAction.OnPasteClicked(
                                                 clipText.toString()
                                             )
                                         )

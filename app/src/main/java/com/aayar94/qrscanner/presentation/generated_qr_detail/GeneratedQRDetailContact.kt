@@ -14,12 +14,17 @@ object GeneratedQRDetailContact {
 
     sealed class UiEffect {
         data object OnNavigateBack : UiEffect()
+        data object OnSaveQr: UiEffect()
     }
 
 
     sealed class UiAction {
         data object OnNavigateBack : UiAction()
-        data class initUI(val bitmap: Bitmap, val qrCategory: QRCategory, val qrProxy: String) : UiAction()
+        data class InitUI(val bitmap: Bitmap, val qrCategory: QRCategory, val qrProxy: String) :
+            UiAction()
+
+        data class SaveQrCode(val qrCode: Bitmap, val category: QRCategory, val qrProxy: String) :
+            UiAction()
     }
 
 }

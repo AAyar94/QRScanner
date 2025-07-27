@@ -1,7 +1,10 @@
 package com.aayar94.qrscanner.presentation.generate
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
+import com.aayar94.qrscanner.data.repository.QRScannerRepository
 import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.domain.use_case.GetQRCategoryListUseCase
 import com.akansh.qrsmith.QRSmith
@@ -16,10 +19,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 
 @HiltViewModel
-class GenerateQRViewModel @Inject constructor() : ViewModel() {
+class GenerateQRViewModel @Inject constructor(
+    val repository: QRScannerRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GenerateQRContact.UiState())
     val uiState = _uiState.asStateFlow()
@@ -30,7 +36,7 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
     fun onAction(action: GenerateQRContact.UiAction) {
         when (action) {
 
-            GenerateQRContact.UiAction.onBackPressed -> {
+            GenerateQRContact.UiAction.OnBackPressed -> {
                 viewModelScope.launch {
                     _uiEffect.send(GenerateQRContact.UiEffect.OnNavigateBack)
                 }
@@ -41,18 +47,14 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
             }
 
             is GenerateQRContact.UiAction.OnSaveQrCode -> {
-                viewModelScope.launch {
-                    _uiEffect.send(
-                        GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail(
-                            action.qrCode,
-                            action.category,
-                            action.qrProxy
-                        )
-                    )
-                }
+                saveQRCode(
+                    action.qrCode,
+                    action.category,
+                    action.qrProxy
+                )
             }
 
-            is GenerateQRContact.UiAction.onPasteClicked -> {
+            is GenerateQRContact.UiAction.OnPasteClicked -> {
                 pasteFromClipboard(action.text)
             }
 
@@ -117,5 +119,32 @@ class GenerateQRViewModel @Inject constructor() : ViewModel() {
 
     }
 
+    fun saveQRCode(
+        qrCode: Bitmap,
+        category: QRCategory,
+        qrProxy: String
+    ) {
+        viewModelScope.launch {
+
+            repository.insertHistoryItem(
+                HistoryItemEntity(
+                    id = 1,
+                    qrCode = qrCode,
+                    uriProxy = qrProxy,
+                    category = category,
+                    time = LocalDateTime.now(),
+                    isCreated = true
+                )
+            )
+
+            _uiEffect.send(
+                GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail(
+                    qrCode,
+                    category,
+                    qrProxy
+                )
+            )
+        }
+    }
 
 }

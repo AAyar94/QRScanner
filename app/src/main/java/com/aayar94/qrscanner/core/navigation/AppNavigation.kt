@@ -133,7 +133,16 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                         GeneratedQRDetailScreenContainer(
                             qrBitmap,
                             it1,
-                            qrProxy1
+                            qrProxy1,
+                            onNavigateBack = { navController.popBackStack() },
+                            onSaveQr = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        "QR saved successfully",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
                         )
                     }
                 }

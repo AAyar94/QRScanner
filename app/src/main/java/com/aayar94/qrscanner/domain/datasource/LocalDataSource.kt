@@ -2,7 +2,7 @@ package com.aayar94.qrscanner.domain.datasource
 
 import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
 
-interface LocalDataSource {
+interface ILocalDataSource {
 
     suspend fun getAllScannedHistory(): List<HistoryItemEntity>
     suspend fun getAllCreatedHistory(): List<HistoryItemEntity>

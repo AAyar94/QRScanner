@@ -14,7 +14,7 @@ object GenerateQRContact {
 
 
     sealed class UiAction {
-        data object onBackPressed : UiAction()
+        data object OnBackPressed : UiAction()
         data class OnUpdateUriText(val uriText: String) : UiAction()
         data class OnGeneraQrCode(
             val qrProxy: String,
@@ -27,7 +27,7 @@ object GenerateQRContact {
             UiAction()
 
         data class CategoryPickedInitalizeUI(val categoryId: Int) : UiAction()
-        data class onPasteClicked(val text: String) : UiAction()
+        data class OnPasteClicked(val text: String) : UiAction()
     }
 
     sealed class UiEffect {

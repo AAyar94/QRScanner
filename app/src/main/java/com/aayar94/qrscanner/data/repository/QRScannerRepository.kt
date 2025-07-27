@@ -1,12 +1,13 @@
 package com.aayar94.qrscanner.data.repository
 
 import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
-import com.aayar94.qrscanner.domain.datasource.LocalDataSource
+import com.aayar94.qrscanner.data.local.datasource.LocalDataSource
+import com.aayar94.qrscanner.domain.datasource.ILocalDataSource
 import jakarta.inject.Inject
 
 class QRScannerRepository @Inject constructor(
     private val localDataSource: LocalDataSource
-) : LocalDataSource {
+) : ILocalDataSource {
     override suspend fun getAllScannedHistory(): List<HistoryItemEntity> {
         return localDataSource.getAllScannedHistory()
     }

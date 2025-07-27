@@ -7,12 +7,14 @@ import com.aayar94.qrscanner.data.local.database.HistoryItemDatabase
 import com.aayar94.qrscanner.data.local.database.QRDATABASE
 import com.aayar94.qrscanner.data.local.datasource.LocalDataSource
 import com.aayar94.qrscanner.data.repository.QRScannerRepository
-import com.google.android.datatransport.runtime.dagger.Provides
+import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
+import dagger.Provides
+import javax.inject.Singleton
 
+@Module
 @InstallIn(SingletonComponent::class)
 object QRScannerModule {
 
@@ -43,6 +45,5 @@ object QRScannerModule {
     ): QRScannerRepository {
         return QRScannerRepository(localDataSource = localDataSource)
     }
-
 
 }
