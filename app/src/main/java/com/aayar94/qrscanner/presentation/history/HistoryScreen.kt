@@ -178,7 +178,12 @@ private fun HistoryScreen(
             Spacer(Modifier.height(12.dp))
             if (uiState.list.isEmpty()) {
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    Text("No History", color = Color.White)
+                    val currentListProvider = if (uiState.selectedSection == 0) {
+                        "scan"
+                    } else {
+                        "create"
+                    }
+                    Text("No $currentListProvider history", color = Color.White)
                 }
             } else {
                 LazyColumn(
