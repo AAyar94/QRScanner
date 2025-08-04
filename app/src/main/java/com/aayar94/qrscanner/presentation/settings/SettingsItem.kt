@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -74,12 +76,19 @@ fun SettingsItem(
                         thumbContent = {
                             if (switchChecked) {
                                 Icon(
-                                    Icons.Filled.Check,
-                                    contentDescription = "Checked",
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    tint = Color.Black
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel,
+                                    contentDescription = null,
                                     tint = Color.White
                                 )
                             }
-                        })
+                        }, colors = SwitchDefaults.colors(checkedTrackColor = Yellow)
+                    )
                 }
             }
         }
