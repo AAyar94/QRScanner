@@ -25,7 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.ContentPasteGo
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -49,11 +48,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aayar94.qrscanner.R
+import com.aayar94.qrscanner.core.component.PageHeader
 import com.aayar94.qrscanner.core.theme.Gray
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
@@ -131,30 +130,12 @@ private fun GenerateScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black.copy(0.7f), RoundedCornerShape(12.dp))
-                        .clickable {
-                            uiAction.invoke(
-                                GenerateQRContact.UiAction.OnBackPressed
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(start = 8.dp),
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                        contentDescription = "Back",
-                        tint = Yellow
-                    )
-                }
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = "Generate Type",
-                    color = Color.White,
-                    fontSize = 24.sp
+                PageHeader(
+                    modifier = Modifier.fillMaxWidth(),
+                    onLeftAction = { uiAction.invoke(GenerateQRContact.UiAction.OnBackPressed) },
+                    leftActionIcon = Icons.AutoMirrored.Outlined.ArrowBack,
+                    leftActionDescription = "Back",
+                    title = "Generate Type",
                 )
             }
             Box(

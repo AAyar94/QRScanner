@@ -115,11 +115,14 @@ fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
                 )
             }
             composable(GENERATE_BY_CATEGORY) {
-                GenerateByCategoryScreenContainer(onCategorySelected = { categoryId ->
-                    navController.navigate("$GENERATE_QR/$categoryId")
-                }, onSettingsSelected = {
-                    navController.navigate(SETTINGS)
-                })
+                GenerateByCategoryScreenContainer(
+                    onBackPressed = { navController.popBackStack() },
+                    onCategorySelected = { categoryId ->
+                        navController.navigate("$GENERATE_QR/$categoryId")
+                    },
+                    onSettingsSelected = {
+                        navController.navigate(SETTINGS)
+                    })
             }
             composable("$GENERATE_QR/{categoryId}") { backStackEntry ->
                 val categoryId = backStackEntry.arguments?.getString("categoryId")

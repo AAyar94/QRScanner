@@ -32,9 +32,7 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    loading = false,
-                    categoryList =
-                        GetQRCategoryListUseCase().getQRCategoriesList()
+                    loading = false, categoryList = GetQRCategoryListUseCase().getQRCategoriesList()
                 )
             }
         }
@@ -51,6 +49,12 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
             GenerateByCategoryContact.UiAction.OnSettingsSelected -> {
                 viewModelScope.launch {
                     _uiEffect.send(GenerateByCategoryContact.UiEffect.OnSettingsSelected)
+                }
+            }
+
+            GenerateByCategoryContact.UiAction.OnBackPressed -> {
+                viewModelScope.launch {
+                    _uiEffect.send(GenerateByCategoryContact.UiEffect.OnNavigateBack)
                 }
             }
         }

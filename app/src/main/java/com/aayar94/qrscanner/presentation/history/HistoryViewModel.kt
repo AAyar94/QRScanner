@@ -6,6 +6,9 @@ import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
 import com.aayar94.qrscanner.data.repository.QRScannerRepository
 import com.aayar94.qrscanner.domain.model.HistoryItem
 import com.aayar94.qrscanner.domain.model.toHistoryItem
+import com.aayar94.qrscanner.presentation.history.HistoryScreenContact.UiEffect.OnNavigateBack
+import com.aayar94.qrscanner.presentation.history.HistoryScreenContact.UiEffect.OnNavigateDetail
+import com.aayar94.qrscanner.presentation.history.HistoryScreenContact.UiEffect.OnNavigateSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -43,13 +46,19 @@ class HistoryViewModel @Inject constructor(
 
             HistoryScreenContact.UiAction.OnSettingsClicked -> {
                 viewModelScope.launch {
-                    _uiEffect.send(HistoryScreenContact.UiEffect.OnNavigateSettings)
+                    _uiEffect.send(OnNavigateSettings)
                 }
             }
 
             is HistoryScreenContact.UiAction.OnNavigateToDetail -> {
                 viewModelScope.launch {
-                    _uiEffect.send(HistoryScreenContact.UiEffect.OnNavigateDetail(action.historyItem))
+                    _uiEffect.send(OnNavigateDetail(action.historyItem))
+                }
+            }
+
+            HistoryScreenContact.UiAction.OnBackPressed -> {
+                viewModelScope.launch {
+                    _uiEffect.send(OnNavigateBack)
                 }
             }
         }

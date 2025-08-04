@@ -18,6 +18,7 @@ object HistoryScreenContact {
     }
 
     sealed class UiAction {
+        data object OnBackPressed : UiAction()
         data class OnSectionSelected(val section: Int) : UiAction()
         data object OnSettingsClicked : UiAction()
         data class OnDeleteHistoryItem(val historyItem: HistoryItem) : UiAction()

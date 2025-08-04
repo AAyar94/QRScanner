@@ -10,24 +10,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aayar94.qrscanner.R
+import com.aayar94.qrscanner.core.component.PageHeader
 import com.aayar94.qrscanner.core.theme.Gray
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
@@ -81,18 +77,13 @@ private fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            IconButton(
-                onClick = { uiAction.invoke(SettingsScreenConstruct.UiAction.OnBackPressed) },
-                modifier = Modifier
-                    .background(Color.Black, shape = RoundedCornerShape(12.dp))
-                    .shadow(5.dp, RoundedCornerShape(12.dp), ambientColor = Gray)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.Yellow
-                )
-            }
+            PageHeader(
+                modifier = Modifier.fillMaxWidth(),
+                onLeftAction = { uiAction.invoke(SettingsScreenConstruct.UiAction.OnBackPressed) },
+                leftActionIcon = Icons.AutoMirrored.Outlined.ArrowBack,
+                leftActionDescription = "Back",
+                title = "Settings",
+            )
             Spacer(Modifier.height(12.dp))
             Text(text = "Settings", color = Yellow)
             Spacer(Modifier.height(12.dp))
