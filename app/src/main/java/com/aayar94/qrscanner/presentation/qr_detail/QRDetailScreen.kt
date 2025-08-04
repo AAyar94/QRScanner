@@ -1,7 +1,9 @@
 package com.aayar94.qrscanner.presentation.qr_detail
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,21 +27,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import com.aayar94.qrscanner.core.component.PageHeader
 import com.aayar94.qrscanner.core.theme.Gray
+import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
 
+
 @Composable
-fun QRDetailScreenContainer() {
-    QRDetailScreen()
+fun QRDetailScreenContainer(qrProxy: String) {
+    QRDetailScreen(qrProxy)
 }
 
 @Composable
-private fun QRDetailScreen() {
+private fun QRDetailScreen(qrProxy: String) {
+    val context = LocalContext.current
     Box(
         Modifier
             .fillMaxSize()
@@ -51,34 +58,15 @@ private fun QRDetailScreen() {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(36.dp),
         ) {
-            Row(
+            PageHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black.copy(0.7f), RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(start = 8.dp),
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                        contentDescription = "Back",
-                        tint = Yellow
-                    )
-                }
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = "Result",
-                    color = Color.White,
-                    fontSize = 24.sp
-                )
-            }
+                onLeftAction = {},
+                leftActionIcon = Icons.AutoMirrored.Default.ArrowBackIos,
+                leftActionDescription = "Back",
+                title = "Result"
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,8 +106,22 @@ private fun QRDetailScreen() {
                         color = Gray,
                         modifier = Modifier.padding(vertical = 12.dp, horizontal = 12.dp)
                     )
-                    Column {
-                        Text("QR url", color = Color.White)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                val url = qrProxy
+                                val i = Intent(Intent.ACTION_VIEW)
+                                i.setData(url.toUri())
+                                context.startActivity(i)
+                            },
+                            text = qrProxy,
+                            color = Color.White,
+                            textDecoration = TextDecoration.Underline
+                        )
                         Text("Save QR Code", color = Yellow)
                     }
                 }
@@ -184,7 +186,7 @@ private fun QRDetailScreen() {
 @Preview
 @Composable
 private fun QRDetailScreenPreview() {
-    com.aayar94.qrscanner.core.theme.QRScannerTheme {
-        QRDetailScreen()
+    QRScannerTheme {
+        QRDetailScreen("Hello link")
     }
 }

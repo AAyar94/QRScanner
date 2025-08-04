@@ -2,6 +2,9 @@ package com.aayar94.qrscanner.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aayar94.qrscanner.presentation.home.HomeScreenContract.UiEffect.NavigateToGenerate
+import com.aayar94.qrscanner.presentation.home.HomeScreenContract.UiEffect.NavigateToQRDetail
+import com.aayar94.qrscanner.presentation.home.HomeScreenContract.UiEffect.NavigateToQRHistory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -38,13 +41,19 @@ class HomeViewModel @Inject constructor() :
 
             HomeScreenContract.UiAction.NavigateToGenerate -> {
                 viewModelScope.launch {
-                    _uiEffect.send(HomeScreenContract.UiEffect.NavigateToGenerate())
+                    _uiEffect.send(NavigateToGenerate())
                 }
             }
 
             HomeScreenContract.UiAction.NavigateToQRHistory -> {
                 viewModelScope.launch {
-                    _uiEffect.send(HomeScreenContract.UiEffect.NavigateToQRHistory())
+                    _uiEffect.send(NavigateToQRHistory())
+                }
+            }
+
+            is HomeScreenContract.UiAction.OnNavigateToDetail -> {
+                viewModelScope.launch {
+                    _uiEffect.send(NavigateToQRDetail(action.qrProxy))
                 }
             }
         }

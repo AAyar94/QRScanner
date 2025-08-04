@@ -29,10 +29,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.outlined.BrowseGallery
 import androidx.compose.material.icons.outlined.Cameraswitch
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
@@ -64,7 +64,7 @@ import com.aayar94.qrscanner.presentation.QrScannerView
 @Composable
 fun HomeScreenContainer(
     modifier: Modifier = Modifier,
-    onNavigateToQRDetail: () -> Unit,
+    onNavigateToQRDetail: (qrProxy: String) -> Unit,
     onNavigateToGenerate: () -> Unit,
     onNavigateToQRHistory: () -> Unit,
 ) {
@@ -75,7 +75,7 @@ fun HomeScreenContainer(
     LaunchedEffect(uiEffect) {
         when (uiEffect) {
             is HomeScreenContract.UiEffect.NavigateToQRDetail -> {
-                onNavigateToQRDetail.invoke()
+                onNavigateToQRDetail.invoke((uiEffect as HomeScreenContract.UiEffect.NavigateToQRDetail).qrProxy)
             }
 
             is HomeScreenContract.UiEffect.ShowError -> {}
@@ -150,7 +150,16 @@ fun HomeScreen(
                         .border(
                             BorderStroke(2.dp, Color.White.copy(alpha = borderAlpha.value)),
                             shape = CircleShape
-                        ),
+                        )
+                        .clickable {
+                            uiState.qrProxy?.let {
+                                onAction.invoke(
+                                    HomeScreenContract.UiAction.OnNavigateToDetail(
+                                        it
+                                    )
+                                )
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -236,7 +245,6 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
     Box(modifier = modifier.fillMaxSize()) {
         QrScannerView(
             onQrCodeScanned = {
-                scannedText = it
                 result.invoke(it)
             },
             lensFacing = lensFacing,
@@ -268,7 +276,7 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
                 modifier = Modifier
                     .padding(8.dp)
                     .size(32.dp),
-                imageVector = Icons.Outlined.BrowseGallery,
+                imageVector = Icons.Outlined.PhotoLibrary,
                 tint = Color.White,
                 contentDescription = "Gallery"
             )
@@ -335,17 +343,6 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
                     contentDescription = "Zoom Positive"
                 )
             }
-        }
-
-
-        scannedText?.let {
-            Text(
-                text = "QR Kodu: $it",
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-            )
         }
     }
 }

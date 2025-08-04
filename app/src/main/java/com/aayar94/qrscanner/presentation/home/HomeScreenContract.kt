@@ -11,6 +11,7 @@ object HomeScreenContract {
 
     sealed class UiAction {
         data class OnQRCodeScanned(val qrProxy: String) : UiAction()
+        data class OnNavigateToDetail(val qrProxy: String) : UiAction()
         data object Retry : UiAction()
         data object DismissError : UiAction()
         data object NavigateToQRHistory : UiAction()

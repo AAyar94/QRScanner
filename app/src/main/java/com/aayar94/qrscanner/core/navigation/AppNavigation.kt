@@ -62,7 +62,17 @@ fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
         ) {
             composable(HOME) {
                 HomeScreenContainer(
-                    onNavigateToQRDetail = { navController.navigate(QR_DETAIL) },
+                    onNavigateToQRDetail = { qrProxy ->
+                        // TODO:detail e string proxy handle i ile gidecek
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "qrProxy",
+                            qrProxy
+                        )
+                        scope.launch {
+                            snackbarHostState.showSnackbar(qrProxy)
+                        }
+                        navController.navigate(QR_DETAIL)
+                    },
                     onNavigateToGenerate = { navController.navigate(GENERATE_BY_CATEGORY) },
                     onNavigateToQRHistory = { navController.navigate(HISTORY) }
                 )
@@ -163,7 +173,11 @@ fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
                 }
             }
             composable(QR_DETAIL) {
-                QRDetailScreenContainer()
+                val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
+                val qrProxy = savedStateHandle?.get<String>("qrProxy")
+                if (qrProxy != null) {
+                    QRDetailScreenContainer(qrProxy)
+                }
             }
             composable(SETTINGS) {
                 SettingsScreenContainer(
