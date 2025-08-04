@@ -8,6 +8,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,8 @@ fun QrScannerView(
     onQrCodeScanned: (String) -> Unit,
     lensFacing: Int,
     flashEnabled: Boolean,
-    zoomRatio: Float
+    zoomRatioState: State<Float>,
+    onZoomLimitsChanged: (Float, Float) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -33,10 +35,8 @@ fun QrScannerView(
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
 
-    // CameraControl state to be updated when zoomRatio or flash changes
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
 
-    // Rebind camera on lensFacing change
     key(lensFacing) {
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
@@ -60,25 +60,29 @@ fun QrScannerView(
                 .build()
 
             cameraProvider.unbindAll()
+
             val camera = cameraProvider.bindToLifecycle(
                 lifecycleOwner, cameraSelector, preview, analysisUseCase
             )
 
             cameraControl = camera.cameraControl
 
-            // Apply initial zoom and flash settings
-            cameraControl?.setZoomRatio(zoomRatio)
+            val cameraInfo = camera.cameraInfo
+            onZoomLimitsChanged(
+                cameraInfo.zoomState.value?.minZoomRatio ?: 1f,
+                cameraInfo.zoomState.value?.maxZoomRatio ?: 5f
+            )
+
+            cameraControl?.setZoomRatio(zoomRatioState.value)
             cameraControl?.enableTorch(flashEnabled)
 
         }, ContextCompat.getMainExecutor(context))
     }
 
-    // 🔁 Update zoom dynamically
-    LaunchedEffect(zoomRatio) {
-        cameraControl?.setZoomRatio(zoomRatio)
+    LaunchedEffect(zoomRatioState.value) {
+        cameraControl?.setZoomRatio(zoomRatioState.value)
     }
 
-    // 🔁 Update flash dynamically
     LaunchedEffect(flashEnabled) {
         cameraControl?.enableTorch(flashEnabled)
     }

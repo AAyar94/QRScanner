@@ -44,6 +44,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -229,6 +230,8 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
     var flashEnabled by remember { mutableStateOf(false) }
     var zoomRatio by remember { mutableFloatStateOf(1f) }
+    var minZoom by remember { mutableFloatStateOf(1f) }
+    var maxZoom by remember { mutableFloatStateOf(5f) }
 
     Box(modifier = modifier.fillMaxSize()) {
         QrScannerView(
@@ -238,7 +241,14 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
             },
             lensFacing = lensFacing,
             flashEnabled = flashEnabled,
-            zoomRatio = zoomRatio
+            zoomRatioState = rememberUpdatedState(zoomRatio),
+            onZoomLimitsChanged = { min, max ->
+                minZoom = min
+                maxZoom = max
+
+                zoomRatio = zoomRatio.coerceIn(min, max)
+            }
+
         )
 
         Row(
@@ -287,37 +297,47 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
             )
         }
 
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 150.dp)
-                .wrapContentSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Icon(
-                modifier = Modifier.weight(1f),
-                imageVector = Icons.Filled.Remove,
-                tint = Color.White,
-                contentDescription = "Zoom Negative"
-            )
-            Slider(
-                value = zoomRatio,
-                onValueChange = { zoomRatio = it },
-                valueRange = 0f..1f,
+        if (minZoom < maxZoom) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            )
-            Icon(
-                modifier = Modifier.weight(1f),
-                imageVector = Icons.Filled.Add,
-                tint = Color.White,
-                contentDescription = "Zoom Positive"
-            )
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 150.dp)
+                    .wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            zoomRatio = (zoomRatio - 0.3f).coerceIn(minZoom, maxZoom)
+                        },
+                    imageVector = Icons.Filled.Remove,
+                    tint = Color.White,
+                    contentDescription = "Zoom Negative"
+                )
+                Slider(
+                    value = zoomRatio.coerceIn(minZoom, maxZoom),
+                    onValueChange = { zoomRatio = it.coerceIn(minZoom, maxZoom) },
+                    valueRange = minZoom..maxZoom,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 16.dp)
+                )
+                Icon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            zoomRatio = (zoomRatio + 0.3f).coerceIn(minZoom, maxZoom)
+                        },
+                    imageVector = Icons.Filled.Add,
+                    tint = Color.White,
+                    contentDescription = "Zoom Positive"
+                )
+            }
         }
 
-        // Scanned Result
+
         scannedText?.let {
             Text(
                 text = "QR Kodu: $it",
