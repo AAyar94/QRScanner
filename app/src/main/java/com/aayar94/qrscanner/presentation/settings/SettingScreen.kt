@@ -82,7 +82,7 @@ private fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             IconButton(
-                onClick = {},
+                onClick = { uiAction.invoke(SettingsScreenConstruct.UiAction.OnBackPressed) },
                 modifier = Modifier
                     .background(Color.Black, shape = RoundedCornerShape(12.dp))
                     .shadow(5.dp, RoundedCornerShape(12.dp), ambientColor = Gray)

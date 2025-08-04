@@ -2,24 +2,26 @@ package com.aayar94.qrscanner.presentation.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -31,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.core.RequestCameraPermission
 import com.aayar94.qrscanner.core.theme.Gray
@@ -97,9 +99,42 @@ fun OnboardingScreen(modifier: Modifier = Modifier, onLetsGoClick: () -> Unit) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Gray),
+            .background(Yellow),
         contentAlignment = Alignment.Center
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .zIndex(2f)
+                .align(Alignment.BottomCenter)
+                .offset(y = 48.dp)
+        ) {
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.4f),
+                painter = painterResource(R.drawable.bg_splash_wave),
+                contentDescription = null
+            )
+        }
+        IconButton(
+            onClick = { onLetsGoClick.invoke() },
+            modifier = Modifier
+                .padding(24.dp)
+                .wrapContentSize()
+                .zIndex(3f)
+                .background(Yellow, CircleShape)
+                .align(Alignment.BottomEnd)
+
+        ) {
+            Icon(
+                modifier = Modifier.padding(8.dp),
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = Color.Black
+            )
+        }
         Column(
             Modifier
                 .wrapContentSize()
@@ -117,28 +152,9 @@ fun OnboardingScreen(modifier: Modifier = Modifier, onLetsGoClick: () -> Unit) {
             Spacer(Modifier.height(24.dp))
             Text(
                 "Go and enjoy our features for free and make your life easy with us.",
-                textAlign = TextAlign.Center, color = Yellow
+                textAlign = TextAlign.Center, color = Gray
             )
-            Spacer(Modifier.height(36.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Yellow)
-                    .clickable {
-                        onLetsGoClick.invoke()
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text("Let's Go", color = Color.Black)
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = Color.Black
-                )
-            }
+            Spacer(Modifier.height(60.dp))
         }
     }
 }

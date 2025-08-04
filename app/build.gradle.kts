@@ -90,4 +90,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.qrsmith)
+
+    implementation(libs.androidx.datastore.preferences)
 }

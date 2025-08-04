@@ -28,6 +28,7 @@ import com.aayar94.qrscanner.core.navigation.NavigationRoutes.ONBOARDING
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.QR_DETAIL
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SCAN
 import com.aayar94.qrscanner.core.navigation.NavigationRoutes.SETTINGS
+import com.aayar94.qrscanner.data.local.datastore.DataStoreRepository
 import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.presentation.generate.GenerateScreenContainer
 import com.aayar94.qrscanner.presentation.generate_by_category.GenerateByCategoryScreenContainer
@@ -41,11 +42,14 @@ import com.aayar94.qrscanner.presentation.settings.SettingsScreenContainer
 import kotlinx.coroutines.launch
 
 @Composable
-fun AppNavigation(onFinishApp: () -> Unit) {
+fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val dataStoreRepository = remember { DataStoreRepository(context = context) }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(snackbarHost = {
         SnackbarHost(hostState = snackbarHostState)
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -54,7 +58,7 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                 .fillMaxSize()
                 .padding(innerPadding),
             navController = navController,
-            startDestination = ONBOARDING
+            startDestination = if (onboardingFinished) HOME else ONBOARDING
         ) {
             composable(HOME) {
                 HomeScreenContainer(
@@ -65,35 +69,43 @@ fun AppNavigation(onFinishApp: () -> Unit) {
             }
             composable(SCAN) { QrScannerScreen(result = {}) }
             composable(ONBOARDING) {
-                OnboardingScreenContainer(onPermissionResult = { permissionResult ->
-                    if (permissionResult) {
-                        navController.navigate(HOME)
-                    } else {
-                        scope.launch {
-                            val result = snackbarHostState
-                                .showSnackbar(
-                                    message = "Camera permission not granted",
-                                    actionLabel = "Open Settings",
-                                    // Defaults to SnackbarDuration.Short
-                                    duration = SnackbarDuration.Indefinite
-                                )
-                            when (result) {
-                                SnackbarResult.ActionPerformed -> {
-                                    val intent =
-                                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                            data =
-                                                Uri.fromParts("package", context.packageName, null)
-                                        }
-                                    context.startActivity(intent)
-                                }
+                OnboardingScreenContainer(
+                    onPermissionResult = { permissionResult ->
+                        if (permissionResult) {
+                            navController.navigate(HOME)
+                            coroutineScope.launch {
+                                dataStoreRepository.saveOnboardingState(true)
+                            }
+                        } else {
+                            scope.launch {
+                                val result = snackbarHostState
+                                    .showSnackbar(
+                                        message = "Camera permission not granted",
+                                        actionLabel = "Open Settings",
+                                        // Defaults to SnackbarDuration.Short
+                                        duration = SnackbarDuration.Indefinite
+                                    )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> {
+                                        val intent =
+                                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                data =
+                                                    Uri.fromParts(
+                                                        "package",
+                                                        context.packageName,
+                                                        null
+                                                    )
+                                            }
+                                        context.startActivity(intent)
+                                    }
 
-                                SnackbarResult.Dismissed -> {
-                                    onFinishApp.invoke()
+                                    SnackbarResult.Dismissed -> {
+                                        onFinishApp.invoke()
+                                    }
                                 }
                             }
                         }
-                    }
-                })
+                    })
             }
             composable(HISTORY) {
                 HistoryScreenContainer(
@@ -147,19 +159,14 @@ fun AppNavigation(onFinishApp: () -> Unit) {
                     }
                 }
             }
-
             composable(QR_DETAIL) {
                 QRDetailScreenContainer()
             }
-
             composable(SETTINGS) {
                 SettingsScreenContainer(
                     onBackPressed = { navController.popBackStack() }
                 )
             }
-
         }
-
     }
-
 }
