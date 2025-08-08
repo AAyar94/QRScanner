@@ -32,7 +32,8 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    loading = false, categoryList = GetQRCategoryListUseCase().getQRCategoriesList()
+                    isLoading = false,
+                    categoryList = GetQRCategoryListUseCase().getQRCategoriesList()
                 )
             }
         }

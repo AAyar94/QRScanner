@@ -88,6 +88,9 @@ fun HomeScreenContainer(
             }
 
             null -> {}
+            HomeScreenContract.UiEffect.OnNavigateBack -> {
+                onAction.invoke(HomeScreenContract.UiAction.OnBackPressed)
+            }
         }
     }
     HomeScreen(uiState, uiEffect, onAction)

@@ -56,6 +56,12 @@ class HomeViewModel @Inject constructor() :
                     _uiEffect.send(NavigateToQRDetail(action.qrProxy))
                 }
             }
+
+            is HomeScreenContract.UiAction.OnBackPressed -> {
+                viewModelScope.launch {
+                    _uiEffect.send(HomeScreenContract.UiEffect.OnNavigateBack)
+                }
+            }
         }
     }
 

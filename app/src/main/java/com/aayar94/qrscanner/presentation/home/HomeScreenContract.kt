@@ -19,6 +19,7 @@ object HomeScreenContract {
         data object DismissError : UiAction()
         data object NavigateToQRHistory : UiAction()
         data object NavigateToGenerate : UiAction()
+        data object OnBackPressed : UiAction()
     }
 
     sealed class UiEffect : BaseUIEffect {

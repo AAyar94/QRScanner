@@ -30,7 +30,7 @@ class GeneratedQRViewModel @Inject constructor(
 
     fun onAction(action: GeneratedQRDetailContact.UiAction) {
         when (action) {
-            GeneratedQRDetailContact.UiAction.OnNavigateBack -> {
+            GeneratedQRDetailContact.UiAction.OnBackPressed -> {
                 viewModelScope.launch {
                     _uiEffect.send(GeneratedQRDetailContact.UiEffect.OnNavigateBack)
                 }
