@@ -115,6 +115,8 @@ fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
                                 }
                             }
                         }
+                    }, onPermissionNotGranted = {
+                        onFinishApp.invoke()
                     })
             }
             composable(HISTORY) {

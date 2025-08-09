@@ -1,5 +1,8 @@
 package com.aayar94.qrscanner.presentation.onboarding
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,16 +47,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.core.RequestCameraPermission
+import com.aayar94.qrscanner.core.component.CustomAlertDialog
 import com.aayar94.qrscanner.core.theme.Gray
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreenContainer(
     modifier: Modifier = Modifier,
-    onPermissionResult: (Boolean) -> Unit
+    onPermissionResult: (Boolean) -> Unit,
+    onPermissionNotGranted: () -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -60,7 +67,8 @@ fun OnboardingScreenContainer(
     )
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
-
+    var showAlertDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
@@ -76,11 +84,35 @@ fun OnboardingScreenContainer(
                 Spacer(modifier = Modifier.height(8.dp))
                 RequestCameraPermission() { permissionRequestResult ->
                     showBottomSheet = false
-                    onPermissionResult.invoke(permissionRequestResult)
+                    if (permissionRequestResult) {
+                        onPermissionResult.invoke(permissionRequestResult)
+                    } else {
+                        showAlertDialog = true
+                    }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
+    }
+    if (showAlertDialog) {
+        CustomAlertDialog(
+            onDismissRequest = {
+                onPermissionNotGranted.invoke()
+                showAlertDialog = false
+            },
+            onConfirmation = {
+                showAlertDialog = false
+                val intent =
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", context.packageName, null)
+                intent.setData(uri)
+                context.startActivity(intent)
+            },
+            dialogTitle = "Camera Permission",
+            dialogText = "We need camera permission to scan qr code",
+            confirmButtonText = "Go to settings",
+            icon = Icons.Filled.CameraAlt
+        )
     }
 
     OnboardingScreen(
