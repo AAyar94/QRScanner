@@ -3,7 +3,6 @@ package com.aayar94.qrscanner.presentation.generate
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,20 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.ContentPasteGo
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -171,88 +160,16 @@ private fun GenerateScreen(
                             color = Color.White
                         )
                         uiState.selectedCategory?.name?.let {
-                            GenerateQRTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                                title = stringResource(it),
-                                isPasteEnabled = true,
-                                afterTextChanged = {
-                                    uiAction.invoke(GenerateQRContact.UiAction.OnPasteClicked(it))
-                                })
-                        }
-                        if (uiState.selectedCategory?.id == 3) {
-                            Text(
-                                text = "Type title",
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color.White
-                            )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                TextField(
-                                    value = uiState.uriText ?: "",
-                                    onValueChange = { newValue: String ->
-                                        uiAction.invoke(
-                                            GenerateQRContact.UiAction.OnUpdateUriText(
-                                                uriText = newValue
-                                            )
-                                        )
-                                    },
+                            Column {
+                                GenerateQRTextField(
                                     modifier = Modifier
-                                        .fillMaxWidth(0.8f)
-                                        .padding(vertical = 12.dp)
-                                        .wrapContentHeight()
-                                        .border(
-                                            color = Color.White.copy(0.7f),
-                                            shape = RoundedCornerShape(4.dp),
-                                            width = 1.dp
-                                        )
-                                        .background(
-                                            Color.Black.copy(0.7f), RoundedCornerShape(4.dp)
-                                        ),
-                                    colors = TextFieldDefaults.colors(
-                                        focusedTextColor = Color.White,
-                                        focusedContainerColor = Color.Black,
-                                        unfocusedTextColor = Color.White,
-                                        unfocusedContainerColor = Color.Black,
-                                        disabledTextColor = Color.White,
-                                    ),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            keyboardController?.hide()
-                                        })
-                                )
-                                IconButton(
-                                    onClick = {
-                                        val clipText = clipboardManager.nativeClipboard.text
-                                        if (clipText != null) {
-                                            uiAction.invoke(
-                                                GenerateQRContact.UiAction.OnPasteClicked(
-                                                    clipText.toString()
-                                                )
-                                            )
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .padding(12.dp)
-                                        .size(30.dp, 30.dp)
-                                        .wrapContentSize()
-                                        .border(0.5.dp, Yellow, RoundedCornerShape(8.dp))
-                                ) {
-                                    Icon(
-                                        modifier = Modifier.size(30.dp, 30.dp),
-                                        tint = Yellow,
-                                        imageVector = Icons.Default.ContentPasteGo,
-                                        contentDescription = null
-                                    )
-                                }
+                                        .fillMaxWidth()
+                                        .wrapContentHeight(),
+                                    title = stringResource(it),
+                                    isPasteEnabled = true,
+                                    afterTextChanged = {
+                                        uiAction.invoke(GenerateQRContact.UiAction.OnPasteClicked(it))
+                                    })
                             }
                         }
                         Spacer(Modifier.height(12.dp))
