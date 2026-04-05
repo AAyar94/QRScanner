@@ -1,31 +1,34 @@
 [versions]
-agp = "8.11.1"
+agp = "9.1.0"
 barcodeScanning = "17.3.0"
-cameraCamera2 = "1.4.2"
-cameraLifecycle = "1.4.2"
-coreSplashscreen = "1.0.1"
-kotlin = "2.2.0"
-coreKtx = "1.16.0"
+cameraCamera2 = "1.6.0"
+cameraLifecycle = "1.6.0"
+coreSplashscreen = "1.2.0"
+kotlin = "2.2.10"
+coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.2"
-activityCompose = "1.10.1"
-composeBom = "2025.07.00"
-navigationCompose = "2.9.3"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.13.0"
+composeBom = "2026.03.01"
+navigationCompose = "2.9.7"
 
-hazeMaterials = "1.6.9"
-haze = "1.6.9"
-hiltAndroid = "2.57"
-hiltNavigationCompose = "1.2.0"
+hazeMaterials = "1.7.2"
+haze = "1.7.2"
+hiltAndroid = "2.59.2"
+hiltNavigationCompose = "1.3.0"
 materialIconsExtended = "1.7.8"
 qrsmith = "2.1.0"
-roomCompilerVersion = "2.7.2"
-roomKtx = "2.7.2"
-roomRuntime = "2.7.2"
-composeAnimation = "1.8.3"
-ksp = "2.1.21-2.0.2"
-datastorePreferences = "1.1.7"
+roomCompilerVersion = "2.8.4"
+roomKtx = "2.8.4"
+roomRuntime = "2.8.4"
+composeAnimation = "1.10.6"
+ksp = "2.3.2"
+datastorePreferences = "1.2.1"
+guava = "33.3.1-android"
+androidxConcurrentFutures = "1.2.0"
+jspecify = "1.0.0"
 
 projectCompileSdk = "36"
 projectMinSdk = "29"
@@ -69,6 +72,9 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltA
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
 qrsmith = { module = "com.github.akanshSirohi:QRSmith", version.ref = "qrsmith" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurrent-futures-ktx", version.ref = "androidxConcurrentFutures" }
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 
 
 [plugins]

@@ -67,6 +67,10 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.extensions)
 
+    implementation(libs.guava)
+    implementation(libs.androidx.concurrent.futures)
+    implementation(libs.jspecify)
+
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.navigation.compose)
 
