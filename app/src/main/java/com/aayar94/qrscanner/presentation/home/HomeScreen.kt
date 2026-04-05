@@ -1,5 +1,9 @@
 package com.aayar94.qrscanner.presentation.home
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -50,12 +54,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aayar94.qrscanner.core.component.CustomAlertDialog
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
 import com.aayar94.qrscanner.presentation.QrScannerView
@@ -72,27 +78,46 @@ fun HomeScreenContainer(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val uiEffect by vm.uiEffect.collectAsStateWithLifecycle(null)
     val onAction = vm::onAction
+    val context = LocalContext.current
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { onAction(HomeScreenContract.UiAction.OnGalleryImagePicked(it)) }
+    }
+
     LaunchedEffect(uiEffect) {
         when (uiEffect) {
             is HomeScreenContract.UiEffect.NavigateToQRDetail -> {
-                onNavigateToQRDetail.invoke((uiEffect as HomeScreenContract.UiEffect.NavigateToQRDetail).qrProxy)
+                onNavigateToQRDetail((uiEffect as HomeScreenContract.UiEffect.NavigateToQRDetail).qrProxy)
             }
 
             is HomeScreenContract.UiEffect.ShowError -> {}
-            is HomeScreenContract.UiEffect.NavigateToGenerate -> {
-                onNavigateToGenerate.invoke()
+
+            is HomeScreenContract.UiEffect.NavigateToGenerate -> onNavigateToGenerate()
+
+            is HomeScreenContract.UiEffect.NavigateToQRHistory -> onNavigateToQRHistory()
+
+            HomeScreenContract.UiEffect.OnNavigateBack -> {
+                onAction(HomeScreenContract.UiAction.OnBackPressed)
             }
 
-            is HomeScreenContract.UiEffect.NavigateToQRHistory -> {
-                onNavigateToQRHistory.invoke()
+            HomeScreenContract.UiEffect.LaunchGallery -> {
+                galleryLauncher.launch("image/*")
+            }
+
+            is HomeScreenContract.UiEffect.OpenUrl -> {
+                val url = (uiEffect as HomeScreenContract.UiEffect.OpenUrl).url
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                } catch (_: Exception) {}
             }
 
             null -> {}
-            HomeScreenContract.UiEffect.OnNavigateBack -> {
-                onAction.invoke(HomeScreenContract.UiAction.OnBackPressed)
-            }
         }
     }
+
     HomeScreen(uiState, uiEffect, onAction)
 }
 
@@ -104,19 +129,18 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        QrScannerScreen(modifier = Modifier, {
-            onAction.invoke(HomeScreenContract.UiAction.OnQRCodeScanned(it))
-        })
+        QrScannerScreen(
+            modifier = Modifier,
+            result = { onAction(HomeScreenContract.UiAction.OnQRCodeScanned(it)) },
+            onGalleryClick = { onAction(HomeScreenContract.UiAction.OnGalleryClicked) }
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .wrapContentHeight()
                 .padding(bottom = 48.dp)
-                .align(
-                    Alignment.BottomCenter
-                )
+                .align(Alignment.BottomCenter)
                 .padding(horizontal = 8.dp)
-
         ) {
             val isVisible = uiState.qrProxy != null
             val borderAlpha = remember { Animatable(0f) }
@@ -156,11 +180,7 @@ fun HomeScreen(
                         )
                         .clickable {
                             uiState.qrProxy?.let {
-                                onAction.invoke(
-                                    HomeScreenContract.UiAction.OnNavigateToDetail(
-                                        it
-                                    )
-                                )
+                                onAction(HomeScreenContract.UiAction.OnNavigateToDetail(it))
                             }
                         },
                     contentAlignment = Alignment.Center
@@ -186,15 +206,12 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .padding(8.dp)
-                        .clickable {
-                            onAction.invoke(HomeScreenContract.UiAction.NavigateToGenerate)
-                        },
+                        .clickable { onAction(HomeScreenContract.UiAction.NavigateToGenerate) },
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(32.dp),
+                        modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.QrCode,
                         tint = Color.White,
                         contentDescription = "Generate"
@@ -205,15 +222,12 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .padding(8.dp)
-                        .clickable {
-                            onAction.invoke(HomeScreenContract.UiAction.NavigateToQRHistory)
-                        },
+                        .clickable { onAction(HomeScreenContract.UiAction.NavigateToQRHistory) },
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(32.dp),
+                        modifier = Modifier.size(32.dp),
                         imageVector = Icons.Outlined.History,
                         tint = Color.White,
                         contentDescription = "History"
@@ -223,6 +237,39 @@ fun HomeScreen(
             }
         }
 
+        // Gallery QR found — ask user to open
+        if (uiState.galleryQrResult != null) {
+            CustomAlertDialog(
+                dialogTitle = "QR Code Detected",
+                dialogText = uiState.galleryQrResult,
+                confirmButtonText = "Open",
+                dismissButtonText = "Cancel",
+                icon = Icons.Outlined.QrCode,
+                onConfirmation = {
+                    onAction(HomeScreenContract.UiAction.OnOpenGalleryQR(uiState.galleryQrResult))
+                },
+                onDismissRequest = {
+                    onAction(HomeScreenContract.UiAction.DismissGalleryDialogs)
+                }
+            )
+        }
+
+        // No QR detected in gallery image
+        if (uiState.showNoQRDialog) {
+            CustomAlertDialog(
+                dialogTitle = "No QR Code Found",
+                dialogText = "No QR code was detected in the selected image.",
+                confirmButtonText = "OK",
+                dismissButtonText = "Cancel",
+                icon = Icons.Outlined.PhotoLibrary,
+                onConfirmation = {
+                    onAction(HomeScreenContract.UiAction.DismissGalleryDialogs)
+                },
+                onDismissRequest = {
+                    onAction(HomeScreenContract.UiAction.DismissGalleryDialogs)
+                }
+            )
+        }
     }
 }
 
@@ -237,7 +284,11 @@ private fun HomeScreenPreview(
 }
 
 @Composable
-fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
+fun QrScannerScreen(
+    modifier: Modifier = Modifier,
+    result: (String) -> Unit,
+    onGalleryClick: () -> Unit = {}
+) {
     var scannedText by remember { mutableStateOf<String?>(null) }
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
     var flashEnabled by remember { mutableStateOf(false) }
@@ -247,19 +298,15 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
 
     Box(modifier = modifier.fillMaxSize()) {
         QrScannerView(
-            onQrCodeScanned = {
-                result.invoke(it)
-            },
+            onQrCodeScanned = { result(it) },
             lensFacing = lensFacing,
             flashEnabled = flashEnabled,
             zoomRatioState = rememberUpdatedState(zoomRatio),
             onZoomLimitsChanged = { min, max ->
                 minZoom = min
                 maxZoom = max
-
                 zoomRatio = zoomRatio.coerceIn(min, max)
             }
-
         )
 
         Row(
@@ -278,7 +325,8 @@ fun QrScannerScreen(modifier: Modifier = Modifier, result: (String) -> Unit) {
             Icon(
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(32.dp),
+                    .size(32.dp)
+                    .clickable { onGalleryClick() },
                 imageVector = Icons.Outlined.PhotoLibrary,
                 tint = Color.White,
                 contentDescription = "Gallery"
