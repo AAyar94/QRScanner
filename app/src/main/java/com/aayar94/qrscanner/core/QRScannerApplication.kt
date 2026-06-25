@@ -11,8 +11,6 @@ class QRScannerApplication : Application() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-        } else {
-            Timber.plant(CrashlyticsTree())
         }
     }
 }
