@@ -2,7 +2,11 @@
 
 A modern Android QR code scanner and generator built with Jetpack Compose.
 
-![Home](docs/screenshow_home.png) ![Create](docs/screenshow_create.png) ![Settings](docs/screenshow_settings.png)
+<p align="center">
+  <img src="docs/screenshow_home.png" width="30%" />
+  <img src="docs/screenshow_create.png" width="30%" />
+  <img src="docs/screenshow_settings.png" width="30%" />
+</p>
 
 ---
 
