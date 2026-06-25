@@ -39,8 +39,8 @@ object GenerateQRContact {
             val qrCode: Bitmap,
             val category: QRCategory,
             val qrProxy: String
-        ) :
-            UiEffect()
+        ) : UiEffect()
+        data class OnQRGenerationError(val message: String) : UiEffect()
     }
 
 

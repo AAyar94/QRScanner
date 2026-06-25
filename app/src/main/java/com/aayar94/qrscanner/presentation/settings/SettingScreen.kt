@@ -1,5 +1,7 @@
 package com.aayar94.qrscanner.presentation.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,15 +44,26 @@ fun SettingsScreenContainer(onBackPressed: () -> Unit) {
             }
 
             SettingsScreenConstruct.UiEffect.OnPrivacyPolicyClicked -> {
-
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/qrscanner-privacy-policy"))
+                context.startActivity(intent)
             }
 
             SettingsScreenConstruct.UiEffect.OnRateUsClicked -> {
-
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}")).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                }
+                runCatching { context.startActivity(intent) }.onFailure {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")))
+                }
             }
 
             SettingsScreenConstruct.UiEffect.OnShareClicked -> {
-
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, "QR Scanner")
+                    putExtra(Intent.EXTRA_TEXT, "Check out QR Scanner app: https://play.google.com/store/apps/details?id=${context.packageName}")
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share via"))
             }
 
             null -> {}

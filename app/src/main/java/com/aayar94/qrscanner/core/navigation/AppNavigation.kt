@@ -63,7 +63,6 @@ fun AppNavigation(onFinishApp: () -> Unit, onboardingFinished: Boolean) {
             composable(HOME) {
                 HomeScreenContainer(
                     onNavigateToQRDetail = { qrProxy ->
-                        // TODO:detail e string proxy handle i ile gidecek
                         navController.currentBackStackEntry?.savedStateHandle?.set(
                             "qrProxy",
                             qrProxy
