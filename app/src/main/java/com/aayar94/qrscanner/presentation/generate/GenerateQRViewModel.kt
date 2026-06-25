@@ -7,6 +7,8 @@ import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
 import com.aayar94.qrscanner.data.repository.QRScannerRepository
 import com.aayar94.qrscanner.domain.model.QRCategory
 import com.aayar94.qrscanner.domain.use_case.GetQRCategoryListUseCase
+import com.aayar94.qrscanner.core.Constants.Companion.QR_CODE_SIZE
+import com.aayar94.qrscanner.core.Constants.Companion.QR_QUIET_ZONE
 import com.akansh.qrsmith.QRSmith
 import com.akansh.qrsmith.model.QRCodeOptions
 import com.akansh.qrsmith.model.QRStyles
@@ -24,7 +26,8 @@ import java.time.LocalDateTime
 
 @HiltViewModel
 class GenerateQRViewModel @Inject constructor(
-    val repository: QRScannerRepository
+    val repository: QRScannerRepository,
+    private val getCategoryListUseCase: GetQRCategoryListUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GenerateQRContact.UiState())
@@ -84,21 +87,21 @@ class GenerateQRViewModel @Inject constructor(
     fun setupUIState(categoryId: Int) {
         viewModelScope.launch {
             val category =
-                GetQRCategoryListUseCase().getQRCategoriesList().find { it.id == categoryId }
+                getCategoryListUseCase.getQRCategoriesList().find { it.id == categoryId }
             _uiState.update { it.copy(selectedCategory = category) }
         }
     }
 
     fun createQRCode(uriString: String, qrCategory: QRCategory, bgColor: Int, fgColor: Int) {
         val options = QRCodeOptions.Builder()
-            .setWidth(500)
-            .setHeight(500)
+            .setWidth(QR_CODE_SIZE)
+            .setHeight(QR_CODE_SIZE)
             .setForegroundColor(fgColor)
             .setBackgroundColor(bgColor)
             .setPatternStyle(QRStyles.PatternStyle.SQUARE)
             .setEyeFrameShape(QRStyles.EyeFrameShape.SQUARE)
             .setEyeBallShape(QRStyles.EyeBallShape.SQUARE)
-            .setQuietZone(1)
+            .setQuietZone(QR_QUIET_ZONE)
             .build()
 
         try {
@@ -114,7 +117,9 @@ class GenerateQRViewModel @Inject constructor(
                 )
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            viewModelScope.launch {
+                _uiEffect.send(GenerateQRContact.UiEffect.OnQRGenerationError(e.message ?: "Failed to generate QR code"))
+            }
         }
 
     }

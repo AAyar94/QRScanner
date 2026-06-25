@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -80,6 +81,7 @@ fun GenerateScreenContainer(
         }
     }
 
+    val context = LocalContext.current
     LaunchedEffect(uiEffect) {
         when (uiEffect) {
             null -> {}
@@ -93,6 +95,10 @@ fun GenerateScreenContainer(
                     (uiEffect as GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail).category,
                     (uiEffect as GenerateQRContact.UiEffect.OnNavigateGeneratedQRDetail).qrProxy
                 )
+            }
+
+            is GenerateQRContact.UiEffect.OnQRGenerationError -> {
+                Toast.makeText(context, (uiEffect as GenerateQRContact.UiEffect.OnQRGenerationError).message, Toast.LENGTH_SHORT).show()
             }
         }
     }

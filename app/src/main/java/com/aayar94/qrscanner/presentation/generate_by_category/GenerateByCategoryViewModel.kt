@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
+class GenerateByCategoryViewModel @Inject constructor(
+    private val getCategoryListUseCase: GetQRCategoryListUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GenerateByCategoryContact.UiState())
     val uiState = _uiState.asStateFlow()
@@ -33,7 +35,7 @@ class GenerateByCategoryViewModel @Inject constructor() : ViewModel() {
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    categoryList = GetQRCategoryListUseCase().getQRCategoriesList()
+                    categoryList = getCategoryListUseCase.getQRCategoriesList()
                 )
             }
         }

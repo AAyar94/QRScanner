@@ -24,14 +24,14 @@ class HistoryViewModel @Inject constructor(
     private val repository: QRScannerRepository
 ) : ViewModel() {
 
-    val _uiState = MutableStateFlow(HistoryScreenContact.UiState())
+    private val _uiState = MutableStateFlow(HistoryScreenContact.UiState())
     val uiState = _uiState.asStateFlow()
 
-    val _uiEffect = Channel<HistoryScreenContact.UiEffect>(Channel.BUFFERED)
+    private val _uiEffect = Channel<HistoryScreenContact.UiEffect>(Channel.BUFFERED)
     val uiEffect = _uiEffect.receiveAsFlow()
 
-    var page = 1
-    var selectedSection = 1
+    private var page = 1
+    private var selectedSection = 1
 
     fun onAction(action: HistoryScreenContact.UiAction) {
         when (action) {
@@ -64,7 +64,7 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun loadData() {
+    private fun loadData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val list = if (selectedSection == 0) {
@@ -76,7 +76,7 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun deleteHistoryItem(historyItem: HistoryItem) {
+    private fun deleteHistoryItem(historyItem: HistoryItem) {
         viewModelScope.launch {
             repository.deleteHistoryItem(
                 HistoryItemEntity(
@@ -94,7 +94,7 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun onSectionSelected(section: Int) {
+    private fun onSectionSelected(section: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(selectedSection = section, list = emptyList()) }
             selectedSection = section

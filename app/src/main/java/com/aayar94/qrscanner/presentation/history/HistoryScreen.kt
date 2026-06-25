@@ -214,35 +214,3 @@ private fun HistoryScreen(
     }
 }
 
-/*@Preview
-@Composable
-private fun HistoryScreenPreview() {
-    QRScannerTheme {
-        HistoryScreen(
-            uiState = HistoryScreenContact.UiState(
-                selectedSection = 1, list = listOf(
-                    HistoryItem(
-                        id = 1,
-                        "Tenda v12 Wifi",
-                        QRCategory(3, R.string.category_wifi, R.drawable.ic_wifi),
-                        LocalDateTime.now()
-                    ),
-                    HistoryItem(
-                        "Ofis",
-                        QRCategory(7, R.string.category_location, R.drawable.ic_location),
-                        LocalDateTime.now()
-                    ),
-                    HistoryItem(
-                        "Avukat Mail",
-                        QRCategory(9, R.string.category_mail, R.drawable.ic_mail),
-                        LocalDateTime.now()
-                    ),
-
-
-                    )
-            ),
-            uiEffect = null,
-            uiAction = { }
-        )
-    }
-}*/

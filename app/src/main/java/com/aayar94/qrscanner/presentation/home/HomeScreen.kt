@@ -2,6 +2,7 @@ package com.aayar94.qrscanner.presentation.home
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -61,6 +62,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aayar94.qrscanner.core.Constants.Companion.DEFAULT_ZOOM
+import com.aayar94.qrscanner.core.Constants.Companion.MAX_ZOOM
+import com.aayar94.qrscanner.core.Constants.Companion.ZOOM_STEP
 import com.aayar94.qrscanner.core.component.CustomAlertDialog
 import com.aayar94.qrscanner.core.theme.QRScannerTheme
 import com.aayar94.qrscanner.core.theme.Yellow
@@ -111,7 +115,9 @@ fun HomeScreenContainer(
                 try {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     context.startActivity(intent)
-                } catch (_: Exception) {}
+                } catch (e: Exception) {
+                    Toast.makeText(context, "No app found to open this link", Toast.LENGTH_SHORT).show()
+                }
             }
 
             null -> {}
@@ -292,9 +298,9 @@ fun QrScannerScreen(
     var scannedText by remember { mutableStateOf<String?>(null) }
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
     var flashEnabled by remember { mutableStateOf(false) }
-    var zoomRatio by remember { mutableFloatStateOf(1f) }
-    var minZoom by remember { mutableFloatStateOf(1f) }
-    var maxZoom by remember { mutableFloatStateOf(5f) }
+    var zoomRatio by remember { mutableFloatStateOf(DEFAULT_ZOOM) }
+    var minZoom by remember { mutableFloatStateOf(DEFAULT_ZOOM) }
+    var maxZoom by remember { mutableFloatStateOf(MAX_ZOOM) }
 
     Box(modifier = modifier.fillMaxSize()) {
         QrScannerView(
@@ -369,7 +375,7 @@ fun QrScannerScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            zoomRatio = (zoomRatio - 0.3f).coerceIn(minZoom, maxZoom)
+                            zoomRatio = (zoomRatio - ZOOM_STEP).coerceIn(minZoom, maxZoom)
                         },
                     imageVector = Icons.Filled.Remove,
                     tint = Color.White,
@@ -387,7 +393,7 @@ fun QrScannerScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            zoomRatio = (zoomRatio + 0.3f).coerceIn(minZoom, maxZoom)
+                            zoomRatio = (zoomRatio + ZOOM_STEP).coerceIn(minZoom, maxZoom)
                         },
                     imageVector = Icons.Filled.Add,
                     tint = Color.White,

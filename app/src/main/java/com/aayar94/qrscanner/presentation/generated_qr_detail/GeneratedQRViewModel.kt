@@ -19,10 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GeneratedQRViewModel @Inject constructor(
-    val repository: QRScannerRepository
+    private val repository: QRScannerRepository
 ) : ViewModel() {
 
-    val _uiState = MutableStateFlow(GeneratedQRDetailContact.UiState())
+    private val _uiState = MutableStateFlow(GeneratedQRDetailContact.UiState())
     val uiState = _uiState.asStateFlow()
 
     private val _uiEffect = Channel<GeneratedQRDetailContact.UiEffect>(Channel.BUFFERED)
@@ -48,7 +48,7 @@ class GeneratedQRViewModel @Inject constructor(
         }
     }
 
-    fun saveQRCode(
+    private fun saveQRCode(
         qrCode: Bitmap,
         category: QRCategory,
         qrProxy: String
@@ -56,7 +56,7 @@ class GeneratedQRViewModel @Inject constructor(
         viewModelScope.launch {
             repository.insertHistoryItem(
                 HistoryItemEntity(
-                    id = 1,
+                    id = 0,
                     qrCode = qrCode,
                     uriProxy = qrProxy,
                     category = category,
@@ -68,7 +68,7 @@ class GeneratedQRViewModel @Inject constructor(
         }
     }
 
-    fun initUI(bitmap: Bitmap, qrCategory: QRCategory, qrProxy: String) {
+    private fun initUI(bitmap: Bitmap, qrCategory: QRCategory, qrProxy: String) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(

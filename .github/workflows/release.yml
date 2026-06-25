@@ -1,0 +1,74 @@
+name: Build & Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  build-and-release:
+    # Only run when the PR was actually merged, not just closed
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Read version name and code
+        id: version
+        run: |
+          VERSION_NAME=$(grep 'projectversionName' gradle/libs.versions.toml | sed 's/.*= *"//' | sed 's/".*//')
+          VERSION_CODE=$(grep 'projectversionCode' gradle/libs.versions.toml | sed 's/.*= *"//' | sed 's/".*//')
+          echo "name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "tag=v${VERSION_NAME}-${VERSION_CODE}+$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -1)
+          APK_NAME="QRScanner-debug-${{ steps.version.outputs.name }}.apk"
+          mv "$APK_PATH" "app/build/outputs/apk/debug/$APK_NAME"
+          echo "path=app/build/outputs/apk/debug/$APK_NAME" >> $GITHUB_OUTPUT
+          echo "name=$APK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "QR Scanner ${{ steps.version.outputs.name }}"
+          body: |
+            ## QR Scanner ${{ steps.version.outputs.name }} (debug build)
+
+            **Merged PR:** #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}
+            **Commit:** ${{ github.sha }}
+
+            ### Install
+            Download the APK below and install it on your Android device (API 29+).
+            > Debug builds are not obfuscated and include logging.
+          files: ${{ steps.apk.outputs.path }}
+          draft: false
+          prerelease: false

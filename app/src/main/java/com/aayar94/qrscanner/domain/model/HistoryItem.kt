@@ -4,9 +4,12 @@ import android.graphics.Bitmap
 import com.aayar94.qrscanner.data.local.database.HistoryItemEntity
 import java.time.LocalDateTime
 
+/** Domain model representing a scanned or generated QR code history entry. */
 data class HistoryItem(
     val id: Int,
+    /** Decoded QR code image. */
     val qrCode: Bitmap,
+    /** Raw QR code string value (URL, vCard, etc.). */
     val uriProxy: String,
     val category: QRCategory,
     val time: LocalDateTime
