@@ -1,11 +1,11 @@
 package com.aayar94.qrscanner.domain
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
+import timber.log.Timber
 
 @OptIn(ExperimentalGetImage::class)
 fun processImageProxy(
@@ -20,13 +20,13 @@ fun processImageProxy(
             .addOnSuccessListener { barcodes ->
                 for (barcode in barcodes) {
                     barcode.rawValue?.let { value ->
-                        Log.d("QR_SCAN", "QR value: $value")
+                        Timber.d("QR value: $value")
                         onQrCodeScanned(value)
                     }
                 }
             }
             .addOnFailureListener {
-                Log.e("QR_SCAN", "Scan failed: ${it.message}")
+                Timber.e(it, "Scan failed")
             }
             .addOnCompleteListener {
                 imageProxy.close()

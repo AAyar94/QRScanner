@@ -10,9 +10,10 @@ object BitmapConverter {
     @TypeConverter
     @JvmStatic
     fun fromBitmap(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
+        return ByteArrayOutputStream().use { stream ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+            stream.toByteArray()
+        }
     }
 
     @TypeConverter

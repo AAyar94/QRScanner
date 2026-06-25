@@ -7,10 +7,10 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.aayar94.qrscanner.domain.processImageProxy
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 
 @Composable
@@ -40,6 +41,14 @@ fun QrScannerView(
     val previewView = remember { PreviewView(context) }
 
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
+    var activeScanner by remember { mutableStateOf<BarcodeScanner?>(null) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            activeScanner?.close()
+            activeScanner = null
+        }
+    }
 
     LaunchedEffect(lensFacing) {
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.await()
@@ -48,7 +57,10 @@ fun QrScannerView(
             it.surfaceProvider = previewView.surfaceProvider
         }
 
+        activeScanner?.close()
         val barcodeScanner = BarcodeScanning.getClient()
+        activeScanner = barcodeScanner
+
         val analysisUseCase = ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()

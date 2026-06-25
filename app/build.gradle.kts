@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.google.gms.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -95,4 +97,10 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.qrsmith)
+
+    implementation(libs.timber)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }
