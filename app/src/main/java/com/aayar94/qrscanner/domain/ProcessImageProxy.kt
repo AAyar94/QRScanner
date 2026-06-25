@@ -7,6 +7,10 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
 import timber.log.Timber
 
+/**
+ * Runs ML Kit barcode scanning on [imageProxy] and invokes [onQrCodeScanned] with the raw value
+ * of the first detected barcode. Always closes [imageProxy] when done.
+ */
 @OptIn(ExperimentalGetImage::class)
 fun processImageProxy(
     barcodeScanner: BarcodeScanner,

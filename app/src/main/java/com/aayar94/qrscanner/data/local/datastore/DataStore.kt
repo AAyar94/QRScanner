@@ -20,6 +20,7 @@ const val dataStoreName = "QRDataStore"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = dataStoreName)
 
+/** Persists user preferences (onboarding state, beep, vibrate) using DataStore. */
 class DataStoreRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     private val dataStore: DataStore<Preferences> = context.dataStore

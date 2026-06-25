@@ -26,7 +26,8 @@ import java.time.LocalDateTime
 
 @HiltViewModel
 class GenerateQRViewModel @Inject constructor(
-    val repository: QRScannerRepository
+    val repository: QRScannerRepository,
+    private val getCategoryListUseCase: GetQRCategoryListUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GenerateQRContact.UiState())
@@ -86,7 +87,7 @@ class GenerateQRViewModel @Inject constructor(
     fun setupUIState(categoryId: Int) {
         viewModelScope.launch {
             val category =
-                GetQRCategoryListUseCase().getQRCategoriesList().find { it.id == categoryId }
+                getCategoryListUseCase.getQRCategoriesList().find { it.id == categoryId }
             _uiState.update { it.copy(selectedCategory = category) }
         }
     }

@@ -5,6 +5,7 @@ import com.aayar94.qrscanner.data.local.datasource.LocalDataSource
 import com.aayar94.qrscanner.domain.datasource.ILocalDataSource
 import jakarta.inject.Inject
 
+/** Single source of truth for QR history data, delegating to [LocalDataSource]. */
 class QRScannerRepository @Inject constructor(
     private val localDataSource: LocalDataSource
 ) : ILocalDataSource {

@@ -36,7 +36,7 @@ projectCompileSdk = "36"
 projectMinSdk = "29"
 projectTargetSdk = "36"
 projectversionCode = "1"
-projectversionName = "0.1-pre-alpha"
+projectversionName = "1.0.0"
 
 [libraries]
 androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCamera2" }

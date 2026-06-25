@@ -2,11 +2,15 @@ package com.aayar94.qrscanner.domain.use_case
 
 import com.aayar94.qrscanner.R
 import com.aayar94.qrscanner.domain.model.QRCategory
+import javax.inject.Inject
 
-class GetQRCategoryListUseCase {
+/** Returns the full list of supported QR code categories. */
+class GetQRCategoryListUseCase @Inject constructor() {
 
-    fun getQRCategoriesList(): List<QRCategory> {
-        return listOf(
+    fun getQRCategoriesList(): List<QRCategory> = ALL_CATEGORIES
+
+    companion object {
+        val ALL_CATEGORIES: List<QRCategory> = listOf(
             QRCategory(1, R.string.category_text, R.drawable.ic_text),
             QRCategory(2, R.string.category_website, R.drawable.ic_internet),
             QRCategory(3, R.string.category_wifi, R.drawable.ic_wifi),
